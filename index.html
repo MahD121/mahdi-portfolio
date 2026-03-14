@@ -1,0 +1,2568 @@
+<!-- v20260313-1612 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="robots" content="noarchive"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mahdi Jafari — Architect & BIM Developer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0ece4;--bg2:#ebe7de;--bp-glow:#0d3d8a;--bp-bright:#1a5cb8;--bp-line:#2a5aaa;
+  --text-main:#1a3050;--text-dim:#4a6a9a;--text-bright:#0a1c40;--text-label:#2d5a9a;
+  --card-bg:#e8e4db;--card-border:rgba(26,74,138,0.18);--nav-bg:rgba(240,236,228,0.93);
+  --font-mono:'Space Mono',monospace;--font-serif:'Cormorant Garamond',serif;--font-tech:'Share Tech Mono',monospace;
+}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text-main);font-family:var(--font-mono);cursor:none;overflow-x:hidden;min-height:100vh;}
+
+/* CURSOR */
+#cursor{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+/* Full-screen crosshair lines */
+#cur-h{position:fixed;top:0;left:0;width:100vw;height:1px;pointer-events:none;z-index:9998;background:rgba(13,61,138,0.65);transform:translateY(-0.5px);}
+#cur-v{position:fixed;top:0;left:0;width:1px;height:100vh;pointer-events:none;z-index:9998;background:rgba(13,61,138,0.65);transform:translateX(-0.5px);}
+#cursor-trail{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;width:5px;height:5px;border-radius:50%;background:var(--bp-bright);opacity:0.45;transform:translate(-50%,-50%);}
+
+/* GRID BG */
+#bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* INTRO */
+#intro-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;background:var(--bg);}
+#skip-btn{position:fixed;bottom:2rem;right:2rem;z-index:200;background:transparent;border:1px solid var(--bp-line);color:var(--text-dim);font-family:var(--font-tech);font-size:0.58rem;letter-spacing:0.15em;padding:0.4rem 1rem;cursor:none;opacity:0;animation:fadeIn 1s 2s forwards;transition:all 0.3s;}
+#skip-btn:hover{color:var(--bp-glow);border-color:var(--bp-glow);}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* SITE */
+#site{position:relative;z-index:1;opacity:0;transition:opacity 0.8s ease;}
+#site.visible{opacity:1;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;width:100%;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3rem;border-bottom:1px solid var(--card-border);backdrop-filter:blur(16px);background:var(--nav-bg);}
+.nav-logo{font-family:var(--font-serif);font-size:1.05rem;font-style:italic;color:var(--bp-glow);cursor:none;}
+.nav-logo span{font-style:normal;font-family:var(--font-tech);font-size:0.54rem;color:var(--text-dim);display:block;letter-spacing:0.18em;}
+.nav-links{display:flex;gap:2.2rem;list-style:none;}
+.nav-links a{font-family:var(--font-tech);font-size:0.63rem;letter-spacing:0.2em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;transition:color 0.3s;cursor:none;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--bp-glow);transition:width 0.3s;}
+.nav-links a:hover,.nav-links a.active{color:var(--bp-glow);}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+
+/* PAGES */
+.page{display:none;min-height:100vh;padding-top:5rem;width:100%;overflow-x:hidden;box-sizing:border-box;}
+.page.active{display:block;}
+
+/* SECTION HEADER */
+.section-header{padding:3.5rem 4rem 2rem;position:relative;}
+.section-label{font-family:var(--font-tech);font-size:0.53rem;letter-spacing:0.3em;color:var(--text-label);text-transform:uppercase;margin-bottom:0.35rem;}
+.section-title{font-family:var(--font-serif);font-size:clamp(2rem,5vw,4rem);font-weight:300;font-style:italic;color:var(--text-bright);line-height:1;}
+.section-line{width:60px;height:1px;background:linear-gradient(90deg,var(--bp-glow),transparent);margin-top:0.8rem;}
+.ifc-meta-bar{position:absolute;right:4rem;top:3.5rem;font-family:var(--font-tech);font-size:0.47rem;color:var(--text-dim);letter-spacing:0.1em;line-height:2;text-align:right;opacity:0.65;}
+
+/* CATEGORY FILTER */
+.proj-controls{padding:0 4rem 2rem;display:flex;flex-direction:column;gap:1rem;width:100%;box-sizing:border-box;}
+.proj-controls-top{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.proj-search-wrap{position:relative;flex:1;min-width:180px;max-width:320px;}
+.proj-search{width:100%;font-family:var(--font-mono);font-size:.7rem;padding:.38rem .8rem .38rem 2rem;background:transparent;border:1px solid var(--card-border);color:var(--text);outline:none;transition:border-color .2s;letter-spacing:.04em;}
+.proj-search:focus{border-color:var(--bp-glow);}
+.proj-search-icon{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);font-size:.65rem;opacity:.4;pointer-events:none;}
+.proj-search::placeholder{opacity:.35;font-size:.65rem;}
+.proj-sort{font-family:var(--font-tech);font-size:.44rem;letter-spacing:.1em;padding:.38rem .7rem;background:transparent;border:1px solid var(--card-border);color:var(--text-dim);cursor:pointer;outline:none;transition:border-color .2s;}
+.proj-sort:focus,.proj-sort:hover{border-color:var(--bp-glow);color:var(--bp-glow);}
+.proj-sort option{background:var(--bg);color:var(--text);}
+.proj-result-count{font-family:var(--font-tech);font-size:.42rem;letter-spacing:.1em;color:var(--text-dim);margin-left:auto;white-space:nowrap;transition:opacity .2s;}
+.proj-result-count span{color:var(--bp-glow);font-size:.55rem;}
+.category-filter{display:flex;flex-wrap:wrap;gap:.4rem;}
+.cat-btn{font-family:var(--font-tech);font-size:0.44rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.28rem 0.8rem;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.22s;position:relative;overflow:hidden;}
+.cat-btn::before{content:'';position:absolute;inset:0;background:var(--bp-line);transform:scaleX(0);transform-origin:left;transition:transform 0.22s;z-index:0;opacity:0.07;}
+.cat-btn:hover::before,.cat-btn.active::before{transform:scaleX(1);}
+.cat-btn:hover,.cat-btn.active{color:var(--bp-glow);border-color:var(--bp-glow);}
+.cat-btn span{position:relative;z-index:1;}
+.cat-btn.active{background:rgba(13,61,138,0.05);}
+.proj-clear{font-family:var(--font-tech);font-size:.4rem;letter-spacing:.1em;padding:.25rem .6rem;background:transparent;border:1px solid rgba(180,40,40,.3);color:rgba(180,40,40,.7);cursor:pointer;display:none;transition:all .2s;}
+.proj-clear:hover{border-color:rgba(180,40,40,.7);color:rgba(180,40,40,1);}
+.proj-clear.visible{display:block;}
+/* Card fade animation */
+.project-card{transition:opacity .25s ease, transform .25s ease;}
+.project-card.hidden{opacity:0;pointer-events:none;visibility:hidden;}
+
+/* PROJECT GRID */
+.project-grid{padding:0 4rem 6rem;display:flex;flex-wrap:wrap;gap:2px;min-height:200px;width:100%;box-sizing:border-box;}
+.project-card{position:relative;overflow:hidden;cursor:none;background:var(--card-bg);border:1px solid var(--card-border);flex:1 1 300px;max-width:calc(33.333% - 2px);aspect-ratio:4/3;box-sizing:border-box;}
+@media(max-width:900px){.project-card{max-width:calc(50% - 2px);}  }
+@media(max-width:540px){.project-card{max-width:100%;}}
+.card-img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;filter:sepia(0.55) hue-rotate(178deg) saturate(2.8) brightness(0.68);transition:filter 0.55s ease,transform 0.4s ease;}
+.project-card:hover .card-img{filter:none;transform:scale(1.03);}
+.card-canvas-el{width:100%;height:100%;position:absolute;inset:0;filter:sepia(0.55) hue-rotate(178deg) saturate(2.8) brightness(0.68);transition:filter 0.55s ease,transform 0.4s ease;}
+.project-card:hover .card-canvas-el{filter:none;transform:scale(1.03);}
+.project-card:hover .card-overlay{opacity:0;}
+.project-card:hover .card-ifc{opacity:1;transform:translateY(0);}
+.project-card:hover .card-wsv{opacity:0.8;}
+.card-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,74,138,0.18) 0%,transparent 100%);transition:opacity 0.5s;pointer-events:none;}
+.card-wsv{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 0.4s;width:100%;height:100%;}
+.card-info{position:absolute;bottom:0;left:0;right:0;padding:1.1rem 1.4rem;background:linear-gradient(0deg,rgba(240,236,228,0.97) 0%,rgba(240,236,228,0.5) 70%,transparent 100%);pointer-events:none;}
+.card-category{font-family:var(--font-tech);font-size:0.46rem;letter-spacing:0.2em;color:var(--bp-glow);text-transform:uppercase;margin-bottom:0.22rem;}
+.card-title{font-family:var(--font-serif);font-size:1.05rem;font-weight:300;color:var(--text-bright);line-height:1.2;}
+.card-year{font-family:var(--font-tech);font-size:0.43rem;color:var(--text-dim);margin-top:0.18rem;}
+.card-ifc{position:absolute;top:0.8rem;right:0.8rem;font-family:var(--font-tech);font-size:0.38rem;color:var(--bp-glow);letter-spacing:0.07em;line-height:1.85;opacity:0;transform:translateY(-6px);transition:all 0.4s 0.1s;background:rgba(240,236,228,0.93);padding:0.4rem 0.6rem;border-left:2px solid var(--bp-glow);}
+
+/* ABOUT */
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 4rem 6rem;}
+.about-left{padding-right:4rem;}
+.about-right{border-left:1px solid var(--card-border);padding-left:4rem;}
+.about-bio{font-family:var(--font-serif);font-size:1.08rem;line-height:1.9;color:var(--text-main);font-weight:300;margin-bottom:1.7rem;}
+.about-bio em{color:var(--bp-glow);font-style:italic;}
+.philosophy-block{border-left:2px solid var(--bp-glow);padding-left:1.4rem;margin:1.7rem 0;}
+.philosophy-block p{font-family:var(--font-serif);font-size:0.98rem;font-style:italic;color:var(--text-label);line-height:1.8;}
+.skills-label{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.25em;color:var(--text-label);text-transform:uppercase;margin-bottom:1.1rem;}
+.skill-row{display:flex;align-items:center;gap:1rem;margin-bottom:0.85rem;}
+.skill-name{font-family:var(--font-tech);font-size:0.52rem;color:var(--text-dim);letter-spacing:0.07em;width:150px;flex-shrink:0;text-transform:uppercase;}
+.skill-bar-wrap{flex:1;height:1px;background:var(--card-border);position:relative;}
+.skill-bar{height:100%;background:linear-gradient(90deg,var(--bp-glow),var(--bp-bright));position:relative;transition:width 1.5s cubic-bezier(0.25,0.46,0.45,0.94);}
+.skill-bar::after{content:'';position:absolute;right:-3px;top:-3.5px;width:7px;height:7px;border-radius:50%;background:var(--bp-glow);}
+.skill-pct{font-family:var(--font-tech);font-size:0.47rem;color:var(--text-dim);width:2.5rem;text-align:right;}
+.about-timeline{margin-top:0.3rem;}
+.timeline-item{display:flex;gap:1.1rem;padding-bottom:1.3rem;position:relative;cursor:pointer;}
+.timeline-item::before{content:'';position:absolute;left:49px;top:10px;bottom:0;width:1px;background:var(--card-border);}
+.timeline-item:last-child::before{display:none;}
+.tl-popup{
+  position:absolute;left:0;top:calc(100% + 4px);
+  width:100%;min-width:240px;max-width:360px;
+  z-index:200;
+  background:rgba(245,242,235,0.88);
+  backdrop-filter:blur(20px) saturate(1.5);
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid rgba(160,140,100,0.22);
+  border-radius:8px;
+  padding:.85rem 1rem;
+  box-shadow:0 6px 28px rgba(60,40,10,0.12);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s ease, transform .2s ease;
+  transform:translateY(-4px);
+}
+.tl-popup.visible{opacity:1;transform:translateY(0);}
+.tl-popup-org{font-family:var(--font-tech);font-size:.42rem;letter-spacing:.1em;color:var(--bp-glow);margin-bottom:.5rem;opacity:.8;}
+.tl-popup ul{margin:0;padding:0;list-style:none;}
+.tl-popup ul li{font-size:.72rem;color:var(--text);opacity:.88;line-height:1.6;margin-bottom:.25rem;font-family:var(--font-mono);padding-left:.9rem;position:relative;}
+.tl-popup ul li::before{content:'—';position:absolute;left:0;opacity:.4;}
+.t-year{font-family:var(--font-tech);font-size:0.5rem;color:var(--bp-glow);letter-spacing:0.08em;width:40px;flex-shrink:0;padding-top:1px;}
+.t-dot{width:8px;height:8px;border-radius:50%;background:var(--bg);border:1px solid var(--bp-glow);flex-shrink:0;margin-top:1px;position:relative;z-index:1;}
+.t-title{font-family:var(--font-serif);font-size:0.93rem;color:var(--text-bright);font-weight:300;margin-bottom:0.12rem;}
+.t-sub{font-family:var(--font-tech);font-size:0.45rem;color:var(--text-dim);letter-spacing:0.08em;}
+/* LANGUAGE TOGGLE */
+.lang-toggle{display:flex;gap:0;margin-bottom:2.5rem;border:1px solid var(--card-border);}
+.lang-btn{font-family:var(--font-tech);font-size:0.48rem;letter-spacing:0.18em;padding:0.5rem 1.2rem;cursor:pointer;background:transparent;border:none;color:var(--text-dim);transition:all 0.2s;text-transform:uppercase;}
+.lang-btn.active{background:var(--bp-glow);color:var(--bg);}
+.lang-btn:hover:not(.active){color:var(--bp-glow);}
+[data-lang]{transition:opacity 0.25s;}
+/* EXPERTISE CATEGORIES */
+.expertise-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 3rem;margin-top:0.5rem;}
+.exp-category{margin-bottom:1.8rem;}
+.exp-cat-label{font-family:var(--font-tech);font-size:0.46rem;letter-spacing:0.22em;color:var(--bp-glow);text-transform:uppercase;margin-bottom:0.7rem;padding-bottom:0.4rem;border-bottom:1px solid var(--card-border);}
+.exp-tags{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.exp-tag{font-family:var(--font-tech);font-size:0.44rem;letter-spacing:0.06em;color:var(--text-dim);background:var(--card-bg);border:1px solid var(--card-border);padding:0.25rem 0.6rem;line-height:1.4;}
+.exp-tag:hover{border-color:var(--bp-glow);color:var(--bp-glow);}
+/* ABOUT LAYOUT — 3 col on wide screens */
+.about-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:0;padding:0 4rem 6rem;}
+
+
+/* RESOURCES */
+.res-filter{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:2.5rem;}
+.res-filter-btn{font-family:var(--font-tech);font-size:0.46rem;letter-spacing:0.15em;padding:0.4rem 1rem;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:pointer;text-transform:uppercase;transition:all 0.2s;}
+.res-filter-btn.active,.res-filter-btn:hover{border-color:var(--bp-glow);color:var(--bp-glow);background:rgba(13,61,138,0.04);}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+.res-card{background:var(--card-bg);border:1px solid var(--card-border);padding:1.5rem;position:relative;transition:border-color 0.25s,transform 0.25s;cursor:pointer;}
+.res-card:hover{border-color:var(--bp-glow);transform:translateY(-2px);}
+.res-card-type{font-family:var(--font-tech);font-size:0.38rem;letter-spacing:0.2em;color:var(--bp-glow);text-transform:uppercase;margin-bottom:0.7rem;}
+.res-card-title{font-family:var(--font-serif);font-size:1.05rem;color:var(--text-bright);font-weight:300;margin-bottom:0.5rem;line-height:1.4;}
+.res-card-desc{font-family:var(--font-tech);font-size:0.44rem;color:var(--text-dim);letter-spacing:0.04em;line-height:1.7;margin-bottom:1.2rem;}
+.res-card-footer{display:flex;align-items:center;justify-content:space-between;}
+.res-card-cat{font-family:var(--font-tech);font-size:0.38rem;letter-spacing:0.12em;color:var(--text-label);text-transform:uppercase;}
+.res-card-link{font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.1em;color:var(--bp-glow);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.2s;}
+.res-card-link:hover{border-color:var(--bp-glow);}
+.res-card-badge{position:absolute;top:0.8rem;right:0.8rem;font-family:var(--font-tech);font-size:0.35rem;letter-spacing:0.12em;padding:0.2rem 0.5rem;border:1px solid;text-transform:uppercase;}
+.res-badge-plugin{color:#6a9a6a;border-color:#6a9a6a;}
+.res-badge-tutorial{color:var(--bp-glow);border-color:var(--bp-glow);}
+.res-badge-link{color:var(--text-dim);border-color:var(--card-border);}
+.res-badge-doc{color:#9a8a6a;border-color:#9a8a6a;}
+/* CONTACT */
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 4rem 6rem;align-items:start;}
+.contact-left{padding-right:4rem;}
+.contact-right{border-left:1px solid var(--card-border);padding-left:4rem;}
+.contact-desc{font-family:var(--font-serif);font-size:1.04rem;line-height:1.8;color:var(--text-main);font-weight:300;margin-bottom:2rem;}
+.contact-item{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.35rem;}
+.contact-icon{width:30px;height:30px;border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.contact-icon svg{width:13px;height:13px;}
+.cd-label{font-family:var(--font-tech);font-size:0.45rem;letter-spacing:0.18em;color:var(--text-dim);text-transform:uppercase;margin-bottom:0.14rem;}
+.cd-value{font-family:var(--font-serif);font-size:0.9rem;color:var(--text-bright);}
+.cd-value a{color:var(--bp-glow);text-decoration:none;cursor:none;}
+.form-group{margin-bottom:1.1rem;}
+.form-label{font-family:var(--font-tech);font-size:0.45rem;letter-spacing:0.18em;color:var(--text-dim);text-transform:uppercase;display:block;margin-bottom:0.32rem;}
+.form-input,.form-textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--card-border);color:var(--text-bright);font-family:var(--font-serif);font-size:0.9rem;padding:0.42rem 0;outline:none;transition:border-color 0.3s;cursor:none;}
+.form-input:focus,.form-textarea:focus{border-color:var(--bp-glow);}
+.form-textarea{resize:none;height:78px;}
+.form-submit{background:transparent;border:1px solid var(--bp-glow);color:var(--bp-glow);font-family:var(--font-tech);font-size:0.56rem;letter-spacing:0.22em;text-transform:uppercase;padding:0.72rem 1.8rem;cursor:none;transition:all 0.3s;position:relative;overflow:hidden;margin-top:0.4rem;}
+.form-submit::before{content:'';position:absolute;inset:0;background:var(--bp-glow);transform:scaleX(0);transform-origin:left;transition:transform 0.3s;z-index:0;}
+.form-submit:hover::before{transform:scaleX(1);}
+.form-submit:hover{color:var(--bg);}
+.form-submit span{position:relative;z-index:1;}
+
+/* IFC VIEWER */
+#page-viewer{background:var(--bg);}
+.viewer-layout{display:grid;grid-template-columns:255px 1fr;height:calc(100vh - 5rem);overflow:hidden;}
+.viewer-sidebar{border-right:1px solid var(--card-border);background:var(--bg2);overflow-y:auto;padding:1.3rem 1rem;display:flex;flex-direction:column;gap:1.1rem;}
+.vpanel-title{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.22em;color:var(--text-label);text-transform:uppercase;margin-bottom:0.65rem;border-bottom:1px solid var(--card-border);padding-bottom:0.45rem;}
+.upload-zone{border:1px dashed var(--bp-line);padding:1.3rem 1rem;text-align:center;cursor:none;transition:all 0.3s;}
+.upload-zone:hover{border-color:var(--bp-glow);background:rgba(26,74,138,0.03);}
+.upload-zone-icon{font-size:1.4rem;margin-bottom:0.4rem;opacity:0.35;color:var(--bp-glow);}
+.upload-zone p{font-family:var(--font-tech);font-size:0.46rem;color:var(--text-dim);letter-spacing:0.09em;line-height:1.7;}
+.upload-zone strong{color:var(--bp-glow);}
+#ifc-file-input{display:none;}
+.vlayer{display:flex;align-items:center;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid rgba(26,74,138,0.07);}
+.vlayer-name{font-family:var(--font-tech);font-size:0.47rem;color:var(--text-dim);letter-spacing:0.07em;line-height:1.6;}
+.ltoggle{width:22px;height:11px;border:1px solid var(--bp-line);position:relative;cursor:none;flex-shrink:0;}
+.ltoggle.on::after{content:'';position:absolute;inset:2px;background:var(--bp-glow);}
+.ltoggle:hover{border-color:var(--bp-glow);}
+.vmeta{font-family:var(--font-tech);font-size:0.43rem;color:var(--text-dim);line-height:1.95;letter-spacing:0.06em;}
+.vmeta span{color:var(--bp-glow);}
+.vcbtn{font-family:var(--font-tech);font-size:0.48rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.38rem 0.75rem;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.22s;width:100%;text-align:left;margin-bottom:0.28rem;}
+.vcbtn:hover{color:var(--bp-glow);border-color:var(--bp-glow);}
+#viewer-canvas-wrap{position:relative;overflow:hidden;background:var(--bg);}
+#viewer-canvas{width:100%;height:100%;display:block;}
+.viewer-overlay{position:absolute;bottom:1rem;left:1rem;font-family:var(--font-tech);font-size:0.43rem;color:var(--text-dim);letter-spacing:0.09em;line-height:2;pointer-events:none;background:rgba(240,236,228,0.88);padding:0.55rem 0.75rem;border:1px solid var(--card-border);}
+.viewer-hint{position:absolute;top:1rem;right:1rem;font-family:var(--font-tech);font-size:0.41rem;color:var(--text-dim);letter-spacing:0.07em;line-height:2;background:rgba(240,236,228,0.88);padding:0.45rem 0.7rem;border:1px solid var(--card-border);pointer-events:none;}
+#axis-canvas{position:absolute;bottom:1rem;right:1rem;width:80px;height:80px;pointer-events:none;background:rgba(240,236,228,0.7);border:1px solid var(--card-border);}
+
+/* ═══ PROJECT MODAL ═══ */
+#modal{position:fixed;inset:0;z-index:200;background:rgba(240,236,228,0.98);display:none;overflow-y:auto;}
+#modal.open{display:block;}
+.modal-inner{max-width:960px;margin:0 auto;padding:5rem 3rem 5rem;}
+.modal-close{position:fixed;top:1.5rem;right:2rem;background:transparent;border:1px solid var(--card-border);color:var(--text-dim);font-family:var(--font-tech);font-size:0.56rem;letter-spacing:0.18em;padding:0.32rem 0.72rem;cursor:none;transition:all 0.3s;z-index:201;}
+.modal-close:hover{border-color:var(--bp-glow);color:var(--bp-glow);}
+
+/* Hero image area */
+.modal-hero{width:100%;height:460px;position:relative;overflow:hidden;border:1px solid var(--card-border);margin-bottom:0;background:var(--bg2);}
+.modal-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.modal-hero-canvas{width:100%;height:100%;}
+.modal-hero-no-img{display:flex;align-items:center;justify-content:center;height:100%;}
+
+/* Gallery strip */
+.modal-gallery{display:flex;gap:4px;margin-bottom:2rem;background:var(--bg2);padding:4px;border:1px solid var(--card-border);border-top:none;overflow-x:auto;}
+.modal-gallery::-webkit-scrollbar{height:4px;}
+.modal-gallery::-webkit-scrollbar-track{background:var(--bg2);}
+.modal-gallery::-webkit-scrollbar-thumb{background:var(--bp-line);}
+.gallery-thumb{width:80px;height:58px;object-fit:cover;cursor:none;opacity:0.6;border:1px solid transparent;flex-shrink:0;transition:all 0.25s;}
+.gallery-thumb:hover,.gallery-thumb.active{opacity:1;border-color:var(--bp-glow);}
+.gallery-thumb-canvas{width:80px;height:58px;flex-shrink:0;cursor:none;opacity:0.6;border:1px solid transparent;transition:all 0.25s;}
+.gallery-thumb-canvas:hover,.gallery-thumb-canvas.active{opacity:1;border-color:var(--bp-glow);}
+
+/* Modal info */
+.modal-ifc-hdr{font-family:var(--font-tech);font-size:0.44rem;color:var(--text-dim);letter-spacing:0.09em;line-height:2;margin-bottom:1.1rem;border-bottom:1px solid var(--card-border);padding-bottom:0.85rem;}
+.modal-cat{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.22em;color:var(--bp-glow);text-transform:uppercase;margin-bottom:0.4rem;}
+.modal-title{font-family:var(--font-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:300;font-style:italic;color:var(--text-bright);margin-bottom:1rem;}
+.modal-desc{font-family:var(--font-serif);font-size:1.05rem;line-height:1.9;color:var(--text-main);font-weight:300;max-width:700px;margin-bottom:1.5rem;}
+.modal-tags{display:flex;flex-wrap:wrap;gap:0.38rem;}
+.modal-tag{font-family:var(--font-tech);font-size:0.45rem;letter-spacing:0.09em;padding:0.2rem 0.52rem;border:1px solid var(--card-border);color:var(--text-dim);text-transform:uppercase;}
+
+/* STATUS BAR */
+.status-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:0.33rem 3rem;border-top:1px solid var(--card-border);background:var(--nav-bg);backdrop-filter:blur(12px);font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.13em;color:var(--text-dim);}
+.status-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--bp-glow);margin-right:0.38rem;animation:pulse 2.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.15;};}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:90;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(26,74,138,0.01) 3px,rgba(26,74,138,0.01) 4px);}
+
+/* ═══════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════ */
+#admin-overlay{display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;cursor:none;}
+#admin-overlay.open{display:block;}
+
+.admin-nav{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2.5rem;
+  background:var(--nav-bg);border-bottom:1px solid var(--card-border);
+  backdrop-filter:blur(16px);
+}
+.admin-nav-title{font-family:var(--font-serif);font-size:1rem;font-style:italic;color:var(--bp-glow);}
+.admin-nav-title span{font-family:var(--font-tech);font-size:0.5rem;color:var(--text-dim);display:block;letter-spacing:0.18em;font-style:normal;}
+.admin-nav-actions{display:flex;gap:0.7rem;align-items:center;}
+
+.abtn{font-family:var(--font-tech);font-size:0.52rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.5rem 1.1rem;border:1px solid var(--card-border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.22s;}
+.abtn:hover{color:var(--bp-glow);border-color:var(--bp-glow);}
+.abtn.primary{border-color:var(--bp-glow);color:var(--bp-glow);}
+.abtn.primary:hover{background:var(--bp-glow);color:var(--bg);}
+.abtn.danger{border-color:#c04040;color:#c04040;}
+.abtn.danger:hover{background:#c04040;color:var(--bg);}
+.abtn.success{border-color:#208040;color:#208040;}
+.abtn.success:hover{background:#208040;color:var(--bg);}
+
+.admin-body{padding:2rem 2.5rem 4rem;}
+
+/* Password screen */
+#admin-lock{text-align:center;padding:6rem 2rem;}
+#admin-lock h2{font-family:var(--font-serif);font-size:2rem;font-style:italic;color:var(--text-bright);margin-bottom:0.5rem;}
+#admin-lock p{font-family:var(--font-tech);font-size:0.5rem;color:var(--text-dim);letter-spacing:0.15em;margin-bottom:2rem;}
+#pw-input{background:transparent;border:none;border-bottom:1px solid var(--card-border);color:var(--text-bright);font-family:var(--font-mono);font-size:1rem;padding:0.5rem 0;outline:none;text-align:center;width:240px;letter-spacing:0.3em;transition:border-color 0.3s;cursor:none;}
+#pw-input:focus{border-color:var(--bp-glow);}
+#pw-error{font-family:var(--font-tech);font-size:0.48rem;color:#c04040;margin-top:0.8rem;letter-spacing:0.1em;min-height:1rem;}
+
+/* Admin content */
+#admin-content{display:none;}
+#admin-content.unlocked{display:block;}
+
+.admin-section-title{font-family:var(--font-tech);font-size:0.55rem;letter-spacing:0.25em;color:var(--text-label);text-transform:uppercase;margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;}
+
+/* Project list in admin */
+.admin-project-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:3rem;}
+.admin-proj-card{background:var(--bg2);border:1px solid var(--card-border);padding:1rem;position:relative;}
+.admin-proj-card:hover{border-color:var(--bp-line);}
+.apc-img{width:100%;height:130px;object-fit:cover;margin-bottom:0.7rem;background:var(--card-bg);}
+.apc-img-placeholder{width:100%;height:130px;background:var(--card-bg);margin-bottom:0.7rem;display:flex;align-items:center;justify-content:center;font-family:var(--font-tech);font-size:0.45rem;color:var(--text-dim);letter-spacing:0.1em;}
+.apc-cat{font-family:var(--font-tech);font-size:0.45rem;color:var(--bp-glow);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.25rem;}
+.apc-title{font-family:var(--font-serif);font-size:0.95rem;color:var(--text-bright);font-weight:300;margin-bottom:0.4rem;}
+.apc-year{font-family:var(--font-tech);font-size:0.43rem;color:var(--text-dim);}
+.apc-actions{display:flex;gap:0.5rem;margin-top:0.7rem;}
+.apc-badge{display:inline-block;font-family:var(--font-tech);font-size:0.38rem;padding:0.15rem 0.4rem;border:1px solid var(--card-border);color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;margin-top:0.35rem;}
+
+/* Project form */
+#project-form-wrap{background:var(--bg2);border:1px solid var(--card-border);padding:2rem;margin-bottom:2rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.2rem;}
+.form-row.single{grid-template-columns:1fr;}
+.aform-group{display:flex;flex-direction:column;gap:0.35rem;}
+.aform-label{font-family:var(--font-tech);font-size:0.47rem;letter-spacing:0.18em;color:var(--text-dim);text-transform:uppercase;}
+.aform-input,.aform-select,.aform-textarea{background:transparent;border:none;border-bottom:1px solid var(--card-border);color:var(--text-bright);font-family:var(--font-mono);font-size:0.75rem;padding:0.4rem 0;outline:none;transition:border-color 0.3s;cursor:none;width:100%;}
+.aform-input:focus,.aform-select:focus,.aform-textarea:focus{border-color:var(--bp-glow);}
+.aform-textarea{resize:none;height:80px;font-family:var(--font-serif);font-size:0.88rem;}
+.aform-select{background:var(--bg2);}
+.aform-hint{font-family:var(--font-tech);font-size:0.42rem;color:var(--text-dim);letter-spacing:0.07em;margin-top:0.2rem;}
+
+/* Gallery URL list */
+.gallery-url-list{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;}
+.gallery-url-row{display:flex;gap:0.5rem;align-items:center;}
+.gallery-url-row input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--card-border);color:var(--text-bright);font-family:var(--font-tech);font-size:0.6rem;padding:0.3rem 0;outline:none;cursor:none;}
+.gallery-url-row input:focus{border-color:var(--bp-glow);}
+.gurl-remove{background:transparent;border:1px solid var(--card-border);color:var(--text-dim);font-family:var(--font-tech);font-size:0.45rem;padding:0.2rem 0.5rem;cursor:none;transition:all 0.2s;}
+.gurl-remove:hover{border-color:#c04040;color:#c04040;}
+.gurl-add{background:transparent;border:1px solid var(--bp-line);color:var(--text-dim);font-family:var(--font-tech);font-size:0.45rem;letter-spacing:0.12em;padding:0.3rem 0.8rem;cursor:none;transition:all 0.2s;text-transform:uppercase;}
+.gurl-add:hover{border-color:var(--bp-glow);color:var(--bp-glow);}
+
+/* Image preview strip in form */
+.img-preview-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:0.6rem;}
+.img-preview-strip img{width:72px;height:54px;object-fit:cover;border:1px solid var(--card-border);}
+.img-preview-strip .ip-broken{width:72px;height:54px;background:var(--card-bg);border:1px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-tech);font-size:0.35rem;color:var(--text-dim);}
+
+/* Admin toast */
+#admin-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--bp-glow);color:var(--bg);font-family:var(--font-tech);font-size:0.52rem;letter-spacing:0.15em;padding:0.6rem 1.5rem;z-index:600;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+
+/* Export section */
+.export-box{background:var(--bg2);border:1px solid var(--card-border);padding:1.5rem 2rem;margin-top:1.5rem;}
+.export-desc{font-family:var(--font-serif);font-size:0.95rem;color:var(--text-main);line-height:1.8;margin-bottom:1.2rem;}
+.export-steps{font-family:var(--font-tech);font-size:0.47rem;color:var(--text-dim);line-height:2.2;letter-spacing:0.07em;margin-bottom:1.2rem;border-left:2px solid var(--bp-line);padding-left:1rem;}
+
+@media(max-width:900px){
+  .about-layout,.contact-layout{grid-template-columns:1fr;}
+  .about-right,.contact-right{border-left:none;border-top:1px solid var(--card-border);padding-left:0;padding-top:2rem;margin-top:2rem;}
+  .about-left,.contact-left{padding-right:0;}
+  .section-header,.project-grid,.about-layout,.contact-layout,.proj-controls{padding-left:1.5rem;padding-right:1.5rem;}
+  nav{padding:1rem 1.5rem;}
+  .ifc-meta-bar{display:none;}
+  .viewer-layout{grid-template-columns:1fr;}
+  .viewer-sidebar{display:none;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+
+<style>
+/* v20260313-1614 force-override */
+.project-grid{display:flex!important;flex-wrap:wrap!important;width:100%!important;box-sizing:border-box!important;padding:0 2rem 4rem!important;gap:3px!important;}
+.project-card{flex:1 1 220px!important;max-width:calc(25% - 3px)!important;aspect-ratio:4/3!important;box-sizing:border-box!important;position:relative!important;}
+@media(max-width:1100px){.project-card{max-width:calc(33.333% - 3px)!important;}}
+@media(max-width:700px){.project-card{max-width:calc(50% - 3px)!important;}}
+@media(max-width:480px){.project-card{max-width:100%!important;}}
+</style>
+</head>
+<body>
+
+<!-- AUTOCAD CURSOR -->
+<div id="cursor">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="display:block;">
+    <!-- Aperture box centered at (20,20) -->
+    <rect x="12.5" y="12.5" width="15" height="15" stroke="rgba(13,61,138,0.8)" stroke-width="1" fill="none"/>
+    <!-- Top stub: from top edge to box -->
+    <line x1="20" y1="0"  x2="20" y2="12" stroke="rgba(13,61,138,0.65)" stroke-width="1"/>
+    <!-- Bottom stub: from box to bottom edge -->
+    <line x1="20" y1="28" x2="20" y2="40" stroke="rgba(13,61,138,0.65)" stroke-width="1"/>
+    <!-- Left stub -->
+    <line x1="0"  y1="20" x2="12" y2="20" stroke="rgba(13,61,138,0.65)" stroke-width="1"/>
+    <!-- Right stub -->
+    <line x1="28" y1="20" x2="40" y2="20" stroke="rgba(13,61,138,0.65)" stroke-width="1"/>
+  </svg>
+</div>
+<div id="cur-h"></div>
+<div id="cur-v"></div>
+<div id="cursor-trail"></div>
+<div class="scanlines"></div>
+
+<!-- GRID BG -->
+<svg id="bg-grid" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="sg" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(26,74,138,0.09)" stroke-width="0.4"/>
+    </pattern>
+    <pattern id="lg" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#sg)"/>
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(26,74,138,0.17)" stroke-width="0.7"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#lg)"/>
+</svg>
+
+<!-- INTRO -->
+<canvas id="intro-canvas"></canvas>
+<button id="skip-btn" onclick="endIntro()">SKIP · ESC</button>
+
+<!-- MAIN SITE -->
+<div id="site">
+<nav>
+  <div class="nav-logo">Mahdi Jafari<span>ARCHITECT · BIM DEVELOPER · COMPUTATIONAL DESIGN</span></div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('projects');return false;" id="nav-projects" class="active">Projects</a></li>
+    <li><a href="#" onclick="showPage('about');return false;" id="nav-about">About</a></li>
+    <li><a href="#" onclick="showPage('viewer');return false;" id="nav-viewer">IFC Viewer</a></li>
+    <li><a href="#" onclick="showPage('resources');return false;" id="nav-resources">Resources</a></li>
+    <li><a href="#" onclick="showPage('contact');return false;" id="nav-contact">Contact</a></li>
+  </ul>
+</nav>
+<div class="status-bar">
+  <div><span class="status-dot"></span>OPEN BIM · IFC 4.3 · SCHEMA ACTIVE</div>
+  <div id="status-coords">x:0000 · y:0000</div>
+  <div>IfcProject · GlobalId: 2O2Fr$t4X7Zf8NOew · mahdijafari.com</div>
+</div>
+
+<!-- PROJECTS -->
+<div id="page-projects" class="page active">
+  <div class="section-header">
+    <div class="section-label">IfcProject · Portfolio · 2024</div>
+    <h1 class="section-title">Projects</h1>
+    <div class="section-line"></div>
+    <div class="ifc-meta-bar">IfcSite · DEFINED<br>IfcBuilding · <span id="proj-count">0</span> instances<br>schema: IFC4ADD2TC1<br>timestamp: <span id="ts"></span></div>
+  </div>
+  <div class="proj-controls">
+    <div class="proj-controls-top">
+      <div class="proj-search-wrap">
+        <span class="proj-search-icon">⌕</span>
+        <input class="proj-search" id="proj-search" type="text" placeholder="Search projects, tags, year…" oninput="applyFilters()">
+      </div>
+      <select class="proj-sort" id="proj-sort" onchange="applyFilters()">
+        <option value="default">Sort: Default</option>
+        <option value="year-desc">Year: Newest first</option>
+        <option value="year-asc">Year: Oldest first</option>
+        <option value="title-asc">Title: A → Z</option>
+        <option value="title-desc">Title: Z → A</option>
+      </select>
+      <button class="proj-clear" id="proj-clear" onclick="clearFilters()">✕ Clear</button>
+      <div class="proj-result-count" id="proj-result-count"></div>
+    </div>
+    <div class="category-filter" id="proj-cat-filter"></div>
+  </div>
+  <div class="project-grid" id="project-grid"></div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="section-header">
+    <div class="section-label">IfcActor · Biography</div>
+    <h1 class="section-title">About</h1>
+    <div class="section-line"></div>
+    <div class="ifc-meta-bar">IfcPerson · DEFINED<br>IfcOrganization · ACTIVE<br>IfcActorRole · ARCHITECT<br>IfcActorRole · BIMMANAGER</div>
+  </div>
+  <!-- Language Toggle -->
+  <div style="padding:0 4rem;margin-bottom:0;">
+    <div class="lang-toggle" style="display:inline-flex;">
+      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-de" onclick="setLang('de')">DE</button>
+    </div>
+  </div>
+
+  <div class="about-layout">
+    <div class="about-left">
+
+      <!-- BIO EN -->
+      <div data-lang="en">
+        <p class="about-bio">Mahdi Jafari is an <em>architect, BIM developer, and computational designer</em> with over five years of experience across all project phases, from historic masonry to large-scale infrastructure, holding an MSc in Integrative Technologies from Universität Stuttgart.</p>
+        <p class="about-bio">His practice combines <em>Open BIM methodology, parametric computation, and digital fabrication</em> to make interdisciplinary projects more precise, efficient, and future-ready.</p>
+        <div class="philosophy-block"><p>"Architecture begins with a point, a single coordinate in space. Everything else is the discipline of connecting them."</p></div>
+        <p class="about-bio">Bridging architectural intent and machine-readable data, Mahdi optimises BIM workflows across international teams: from IFC schema authoring and Revit API development to robotic fabrication and additive manufacturing.</p>
+      </div>
+
+      <!-- BIO DE -->
+      <div data-lang="de" style="display:none;">
+        <p class="about-bio">Mahdi Jafari ist <em>Architekt, BIM-Entwickler und Computational Designer</em> mit über fünf Jahren Erfahrung in allen Leistungsphasen, von historischem Mauerwerk bis zu internationalen Großprojekten, mit einem Master in Integrative Technologies an der Universität Stuttgart.</p>
+        <p class="about-bio">Seine Arbeit verbindet <em>Open-BIM-Methodik, parametrisches Entwerfen und digitale Fertigung</em>, um interdisziplinäre Projekte präziser, effizienter und zukunftsorientiert umzusetzen.</p>
+        <div class="philosophy-block"><p>„Architektur beginnt mit einem Punkt, einer einzelnen Koordinate im Raum. Alles andere ist die Disziplin, sie zu verbinden."</p></div>
+        <p class="about-bio">An der Schnittstelle von architektonischer Intention und maschinenlesbaren Daten optimiert Mahdi BIM-Workflows internationaler Teams: von der IFC-Schemaerstellung und Revit-API-Entwicklung bis zur Roboterfertigung und additiven Produktion.</p>
+      </div>
+
+      <!-- EXPERTISE CATEGORIES -->
+      <div style="margin-top:2.5rem;">
+        <div data-lang="en"><div class="skills-label">Technical Expertise</div></div>
+        <div data-lang="de" style="display:none;"><div class="skills-label">Digitale Kompetenzen</div></div>
+        <div class="expertise-grid" id="expertise-grid"></div>
+      </div>
+
+      <!-- SKILL BARS -->
+      <div style="margin-top:2rem;">
+        <div data-lang="en"><div class="skills-label">Proficiency</div></div>
+        <div data-lang="de" style="display:none;"><div class="skills-label">Kenntnisgrad</div></div>
+        <div id="skills-list"></div>
+      </div>
+
+    </div>
+    <div class="about-right"><div id="timeline"></div></div>
+  </div>
+</div>
+
+<!-- IFC VIEWER -->
+<div id="page-viewer" class="page">
+  <div class="viewer-layout">
+    <div class="viewer-sidebar">
+      <div>
+        <div class="vpanel-title">Load IFC File</div>
+        <div class="upload-zone" onclick="document.getElementById('ifc-file-input').click()">
+          <div class="upload-zone-icon">⬡</div>
+          <p><strong>Click to upload</strong><br>.ifc / .ifczip<br>or drag & drop</p>
+        </div>
+        <input type="file" id="ifc-file-input" accept=".ifc,.ifczip" onchange="handleIFCUpload(this)"/>
+        <p style="font-family:var(--font-tech);font-size:0.41rem;color:var(--text-dim);margin-top:0.55rem;line-height:1.7;letter-spacing:0.06em;">Demo model loaded · Upload your own IFC to replace</p>
+      </div>
+      <div>
+        <div class="vpanel-title">View Controls</div>
+        <button class="vcbtn" onclick="viewerCmd('iso')">◈ Isometric</button>
+        <button class="vcbtn" onclick="viewerCmd('top')">↑ Top / Plan View</button>
+        <button class="vcbtn" onclick="viewerCmd('front')">→ Front Elevation</button>
+        <button class="vcbtn" onclick="viewerCmd('reset')">↺ Reset Camera</button>
+        <button class="vcbtn" onclick="viewerCmd('wireframe')">⬡ Toggle Wireframe</button>
+        <button class="vcbtn" onclick="viewerCmd('explode')">✦ Explode View</button>
+      </div>
+      <div><div class="vpanel-title">Layers</div><div id="viewer-layers"></div></div>
+      <div><div class="vpanel-title">Metadata</div><div class="vmeta" id="vmeta">Schema: <span>IFC4ADD2TC1</span><br>IfcProject: <span>Demo_BIM</span><br>IfcBuilding: <span>1</span><br>IfcBuildingStorey: <span>4</span><br>IfcWall: <span>38</span><br>IfcSlab: <span>5</span><br>IfcDoor: <span>12</span><br>IfcWindow: <span>18</span><br>IfcColumn: <span>8</span><br>IfcBeam: <span>14</span><br>GlobalId: <span id="vguid">2O2Fr$t4X7Zf</span></div></div>
+    </div>
+    <div id="viewer-canvas-wrap">
+      <canvas id="viewer-canvas"></canvas>
+      <div class="viewer-hint">Left drag: Orbit &nbsp;|&nbsp; Right drag: Pan &nbsp;|&nbsp; Scroll: Zoom<br>Click element to inspect</div>
+      <div class="viewer-overlay" id="viewer-info">IfcBuilding · Demo_BIM_Model<br>Storeys: 4 · Height: 14.4m<br>GFA: 1,200m²</div>
+      <canvas id="axis-canvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- RESOURCES -->
+<div id="page-resources" class="page">
+  <div class="section-header">
+    <div class="section-label">IfcDocumentReference · Knowledge Base</div>
+    <h1 class="section-title">Resources</h1>
+    <div class="section-line"></div>
+  </div>
+  <div style="padding:0 4rem 6rem;">
+    <div class="res-filter" id="res-filter"></div>
+    <div class="res-grid" id="res-grid"></div>
+    <div id="res-empty" style="display:none;text-align:center;padding:4rem;font-family:var(--font-tech);font-size:0.5rem;color:var(--text-dim);letter-spacing:0.15em;opacity:0.5;">NO RESOURCES IN THIS CATEGORY YET</div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+  <div class="section-header">
+    <div class="section-label">IfcTelecomAddress · Connect</div>
+    <h1 class="section-title">Contact</h1>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-layout">
+    <div class="contact-left">
+      <p class="contact-desc">Whether you're exploring a new architectural vision, need BIM consulting, or want to discuss computational design — let's begin with a point.</p>
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0d3d8a" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+        <div><div class="cd-label">Email</div><div class="cd-value"><a href="/cdn-cgi/l/email-protection#4e272028210e232f262a27242f282f3c27602d2123"><span class="__cf_email__" data-cfemail="1a73747c755a777b727e73707b7c7b687334797577">[email&#160;protected]</span></a></div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0d3d8a" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+        <div><div class="cd-label">Web</div><div class="cd-value"><a href="https://mahdijafari.com" target="_blank">mahdijafari.com</a></div></div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="skills-label" style="margin-bottom:1.3rem;">Send a Message</div>
+      <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" placeholder="Firstname Lastname"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="your@email.com"/></div>
+      <div class="form-group"><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="Project inquiry, collaboration..."/></div>
+      <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Tell me about your project..."></textarea></div>
+      <button class="form-submit"><span>TRANSMIT MESSAGE ↗</span></button>
+    </div>
+  </div>
+</div>
+</div><!-- /site -->
+
+<!-- PROJECT MODAL -->
+<div id="modal">
+  <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
+  <div class="modal-inner">
+    <div class="modal-hero" id="modal-hero">
+      <canvas class="modal-hero-canvas" id="modal-canvas"></canvas>
+    </div>
+    <div class="modal-gallery" id="modal-gallery"></div>
+    <div class="modal-ifc-hdr" id="modal-ifc-hdr"></div>
+    <div class="modal-cat" id="modal-cat"></div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-tags" id="modal-tags"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     ADMIN PANEL
+════════════════════════════ -->
+<div id="admin-overlay">
+  <div class="admin-nav">
+    <div class="admin-nav-title">Admin Panel<span>MAHDI JAFARI · CONTENT MANAGEMENT</span></div>
+    <div class="admin-nav-actions">
+      <button class="abtn" onclick="closeAdmin()">← Back to Site</button>
+    </div>
+  </div>
+  <div class="admin-body">
+
+    <!-- LOCK SCREEN -->
+    <div id="admin-lock">
+      <h2>Content Management</h2>
+      <p>ENTER ADMIN PASSWORD</p>
+      <input type="password" id="pw-input" placeholder="········" onkeydown="if(event.key==='Enter')checkPw()"/>
+      <div id="pw-error"></div>
+      <br/><br/>
+      <button class="abtn primary" onclick="checkPw()">UNLOCK ↗</button>
+      <p style="font-family:var(--font-tech);font-size:0.42rem;color:var(--text-dim);margin-top:2rem;letter-spacing:0.08em;">Default password: <strong>mahdi2024</strong> — change in code line marked CHANGE_PW</p>
+    </div>
+
+    <!-- ADMIN CONTENT -->
+    <div id="admin-content">
+
+      <!-- Project list -->
+      <div class="admin-section-title">
+        <span>Projects · <span id="admin-count">0</span> total</span>
+        <button class="abtn primary" onclick="showAddForm()">+ Add New Project</button>
+      </div>
+      <div class="admin-project-list" id="admin-project-list"></div>
+
+      <!-- Add / Edit form -->
+      <div id="project-form-wrap" style="display:none;">
+        <div class="admin-section-title"><span id="form-title-label">Add New Project</span></div>
+
+        <div class="form-row">
+          <div class="aform-group">
+            <label class="aform-label">Project Title *</label>
+            <input type="text" class="aform-input" id="f-title" placeholder="e.g. Boutique Hotel Interior, Stockholm"/>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Category *</label>
+            <select class="aform-select" id="f-cat">
+              <option value="">— Select —</option>
+              <option value="bim">BIM & IFC</option>
+              <option value="interior">Interior Design</option>
+              <option value="infrastructure">Infrastructure</option>
+              <option value="residential">Residential Housing</option>
+              <option value="computational">Computational Design</option>
+              <option value="coding">Coding & Robotics</option>
+              <option value="heritage">Conservation & Heritage</option>
+              <option value="retail">Retail</option>
+              <option value="facade">Façade</option>
+              <option value="photography">Photography</option>
+              <option value="sketch">Sketch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="aform-group">
+            <label class="aform-label">Year</label>
+            <input type="text" class="aform-input" id="f-year" placeholder="2024"/>
+          </div>
+          <div class="aform-group">
+            <label class="aform-label">Tags (comma separated)</label>
+            <input type="text" class="aform-input" id="f-tags" placeholder="BIM, IFC4, Revit, Grasshopper"/>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="aform-group">
+            <label class="aform-label">Short Description</label>
+            <textarea class="aform-textarea" id="f-desc" placeholder="A brief description of the project — what it is, your role, key techniques used..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="aform-group">
+            <label class="aform-label">IFC Tags (optional — leave blank for Sketch/Heritage)</label>
+            <input type="text" class="aform-input" id="f-ifc" placeholder="IfcSpace · IfcRoom · IfcFurnishingElement · IfcLightFixture"/>
+            <div class="aform-hint">Use · to separate tags. Leave blank for sketch, photography, conservation categories.</div>
+          </div>
+        </div>
+
+        <!-- Hero image -->
+        <div class="form-row single">
+          <div class="aform-group">
+            <label class="aform-label">Hero Image URL (main card + modal top)</label>
+            <input type="text" class="aform-input" id="f-hero" placeholder="images/interior/hotel-hero.jpg" oninput="previewHero()"/>
+            <div class="aform-hint">Upload image to Bluehost first → /public_html/images/[category]/filename.jpg → paste path here</div>
+            <div id="hero-preview" class="img-preview-strip" style="margin-top:0.6rem;"></div>
+          </div>
+        </div>
+
+        <!-- Gallery images -->
+        <div class="form-row single">
+          <div class="aform-group">
+            <label class="aform-label">Gallery Images (shown in modal slideshow)</label>
+            <div class="aform-hint" style="margin-bottom:0.5rem;">Add up to 10 image URLs — one per row. Hero image is automatically included as first image.</div>
+            <div class="gallery-url-list" id="gallery-url-list"></div>
+            <button class="gurl-add" onclick="addGalleryRow()" style="margin-top:0.6rem;">+ Add Image URL</button>
+            <div id="gallery-preview" class="img-preview-strip" style="margin-top:0.8rem;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.8rem;margin-top:1.5rem;">
+          <button class="abtn primary" onclick="saveProject()">SAVE PROJECT ↗</button>
+          <button class="abtn" onclick="cancelForm()">Cancel</button>
+          <button class="abtn danger" id="delete-btn" style="display:none;margin-left:auto;" onclick="deleteProject()">DELETE PROJECT</button>
+        </div>
+      </div>
+
+      <!-- Export section -->
+      <div class="admin-section-title" style="margin-top:2.5rem;">Export & Deploy</div>
+      <div class="export-box">
+        <p class="export-desc">After adding your projects here, <strong>Export</strong> to download a complete, ready-to-upload <code>index.html</code> with all your content baked in. Then upload it to Bluehost via cPanel — every visitor will see your updated content.</p>
+        <div class="export-steps">
+          1. Add / edit your projects above<br>
+          2. Click Export index.html below<br>
+          3. Log into Bluehost cPanel → File Manager → public_html<br>
+          4. Delete old index.html → Upload new one<br>
+          5. Visit mahdijafari.com in incognito to verify ✓
+        </div>
+        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+          <button class="abtn success" onclick="exportHTML()">↓ EXPORT INDEX.HTML</button>
+          <button class="abtn" onclick="exportProjectsJSON()">↓ Export Projects JSON (backup)</button>
+          <button class="abtn" onclick="document.getElementById('import-json').click()">↑ Import Projects JSON (restore)</button>
+          <input type="file" id="import-json" accept=".json" style="display:none" onchange="importProjectsJSON(this)"/>
+        </div>
+      </div>
+
+    </div><!-- /admin-content -->
+  </div>
+</div>
+
+<div id="admin-toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- web-ifc loaded dynamically in JS -->
+<script data-cfasync="false">
+// ════════════════════════════════════
+// !! CHANGE YOUR PASSWORD HERE !!
+const ADMIN_PASSWORD = 'mahdi2024'; // CHANGE_PW
+// ════════════════════════════════════
+
+// ════════════════════════════════════
+// DEFAULT PROJECTS (used when localStorage is empty)
+// ════════════════════════════════════
+const DEFAULT_PROJECTS = [
+  {id:1,title:'Parametric Tower Skin',category:'computational',year:'2023',
+   desc:'Adaptive façade system generated through evolutionary algorithms — each panel responds to solar angle, wind load, and view optimization simultaneously.',
+   tags:['Grasshopper','Evolutionary Algorithms','Parametric','C#'],
+   pal:['#e8a870','#d07840','#b05820','#8b4010','#f0c080'],
+   ifc:'IfcCurtainWall · IfcMember · IfcPlate · IfcBuildingElementProxy',
+   hero:'',gallery:[]},
+  {id:2,title:'IFC Open BIM Hospital',category:'bim',year:'2023',
+   desc:'Full IFC4 compliant model for a 45,000m² hospital. Custom Revit plugins for automated property set injection, clash detection, and federated coordination.',
+   tags:['Revit API','IFC4','C#','Navisworks'],
+   pal:['#6090c8','#3870a8','#185088','#083068','#88b0e8'],
+   ifc:'IfcBuilding · IfcBuildingStorey · IfcSpace · IfcZone · IfcWall · IfcDoor · IfcWindow',
+   hero:'',gallery:[]},
+  {id:3,title:'Light Rail Infrastructure BIM',category:'infrastructure',year:'2022',
+   desc:'BIM authoring for a 12km light rail extension. Road alignment, utilities, drainage, and structural models federated with 4D construction sequencing.',
+   tags:['Civil 3D','IFC','4D BIM','Infrastructure'],
+   pal:['#70a840','#509020','#306800','#184800','#90c860'],
+   ifc:'IfcAlignment · IfcRoad · IfcBridge · IfcCivilElement · IfcSite',
+   hero:'',gallery:[]},
+  {id:4,title:'Minimalist Villa — Lake District',category:'residential',year:'2023',
+   desc:'A 380m² private residence dissolving into its lakeside landscape. Exposed concrete, floor-to-ceiling glass, single-story plan tracing the topography.',
+   tags:['Residential','BIM 6D','Concrete','Landscape'],
+   pal:['#c8b890','#a89060','#887040','#685020','#e8d8b0'],
+   ifc:'IfcBuilding · IfcBuildingStorey · IfcSpace · IfcDoor · IfcWindow · IfcRoof',
+   hero:'',gallery:[]},
+  {id:5,title:'Boutique Hotel Interior',category:'interior',year:'2022',
+   desc:'28-room boutique hotel concept. Material palettes from local artisan craft — handmade tiles, woven textiles, custom millwork. Full FF&E in BIM.',
+   tags:['Interior','FF&E','Lighting Design','Materials'],
+   pal:['#c8a060','#a88040','#886020','#684000','#e8c080'],
+   ifc:'IfcSpace · IfcRoom · IfcFurnishingElement · IfcLightFixture · IfcCovering',
+   hero:'',gallery:[]},
+  {id:6,title:'Gothic Cathedral — HBIM Survey',category:'heritage',year:'2021',
+   desc:'Photogrammetric survey and HBIM documentation of a 14th-century cathedral. Point cloud processing and heritage BIM for conservation planning.',
+   tags:['HBIM','Photogrammetry','Conservation','Scan-to-BIM'],
+   pal:['#c8b080','#a89060','#887040','#685020','#e8d0a0'],
+   ifc:null,hero:'',gallery:[]},
+  {id:7,title:'High-Rise Glass Façade',category:'facade',year:'2023',
+   desc:'Unitised curtain wall for a 22-storey tower. Parametric panel optimization, structural thermal break analysis, full BIM coordination.',
+   tags:['Façade','Curtain Wall','Parametric','BIM'],
+   pal:['#70b0d8','#5098c0','#3080a8','#106890','#90d0f0'],
+   ifc:'IfcCurtainWall · IfcPlate · IfcMember · IfcWindow · IfcFastener',
+   hero:'',gallery:[]},
+  {id:8,title:'Line Studies — Sketch Series',category:'sketch',year:'2024',
+   desc:'An ongoing series of architectural sketches exploring the philosophy of line. From the first mark on paper to the structural diagram — each line carries intent.',
+   tags:['Sketch','Drawing','Concept','Philosophy'],
+   pal:['#f0e8d8','#d8c8a8','#c0a878','#a88848','#e8d8b8'],
+   ifc:null,hero:'',gallery:[]},
+];
+
+// Cat labels — merged with any custom categories from admin
+const CAT_LABELS_BASE = {
+  bim:'BIM & IFC',interior:'Interior Design',infrastructure:'Infrastructure',
+  residential:'Residential Housing',computational:'Computational Design',
+  coding:'Coding & Robotics',heritage:'Conservation & Heritage',
+  retail:'Commercial',facade:'Façade',photography:'Photography',sketch:'Sketch'
+};
+const CAT_LABELS = (()=>{
+  try{const s=localStorage.getItem('mj_categories');return s?{...CAT_LABELS_BASE,...JSON.parse(s)}:CAT_LABELS_BASE;}
+  catch(e){return CAT_LABELS_BASE;}
+})();
+
+// IFC suggestions per category
+const IFC_SUGGESTIONS = {
+  bim:'IfcBuilding · IfcBuildingStorey · IfcSpace · IfcZone · IfcWall · IfcSlab · IfcDoor · IfcWindow',
+  interior:'IfcSpace · IfcRoom · IfcFurnishingElement · IfcLightFixture · IfcCovering · IfcFloor',
+  infrastructure:'IfcAlignment · IfcRoad · IfcBridge · IfcCivilElement · IfcGeographicElement',
+  residential:'IfcBuilding · IfcBuildingStorey · IfcSpace · IfcDoor · IfcWindow · IfcRoof · IfcStair',
+  computational:'IfcCurtainWall · IfcPlate · IfcBuildingElementProxy · IfcPropertySet',
+  coding:'IfcApplication · IfcExternalReference · IfcPropertySet · IfcClassification',
+  retail:'IfcSpace · IfcFurniture · IfcCovering · IfcLightFixture · IfcDoor',
+  facade:'IfcCurtainWall · IfcPlate · IfcMember · IfcWindow · IfcFastener',
+  heritage:null, photography:null, sketch:null
+};
+
+// ════════════════════════════════════
+// PROJECT DATA — loads from localStorage or defaults
+// ════════════════════════════════════
+async function fetchProjectsFromFile(){
+  // Fetch projects.json from same directory — this is the permanent data store
+  try{
+    const resp = await fetch('./projects.json?v='+Date.now());
+    if(resp.ok){
+      const data = await resp.json();
+      if(data.projects && data.projects.length > 0){
+        console.log('[MJ] Loaded', data.projects.length, 'projects from projects.json');
+        return data.projects;
+      }
+    }
+  }catch(e){ console.warn('[MJ] Could not fetch projects.json, using defaults', e); }
+  return null;
+}
+
+function loadProjects(){
+  // Try localStorage first (admin edits in current browser session)
+  try{
+    const stored=localStorage.getItem('mj_projects');
+    if(stored){const p=JSON.parse(stored);if(p&&p.length>0)return p;}
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
+}
+function saveProjects(projects){
+  try{localStorage.setItem('mj_projects',JSON.stringify(projects));}catch(e){}
+}
+let PROJECTS = loadProjects();
+
+// ════════════════════════════════════
+// CURSOR
+// ════════════════════════════════════
+const curEl=document.getElementById('cursor'),trEl=document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  curEl.style.left=mx+'px';curEl.style.top=my+'px';
+  document.getElementById('cur-h').style.top=my+'px';
+  document.getElementById('cur-v').style.left=mx+'px';
+  const sc=document.getElementById('status-coords');
+  if(sc)sc.textContent='x:'+String(mx).padStart(4,'0')+' · y:'+String(my).padStart(4,'0');
+});
+(function tl(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;trEl.style.left=tx+'px';trEl.style.top=ty+'px';requestAnimationFrame(tl);})();
+
+// ════════════════════════════════════
+// TIMESTAMP
+// ════════════════════════════════════
+function updateTS(){const el=document.getElementById('ts');if(el)el.textContent=new Date().toISOString().replace('T',' ').slice(0,19);}
+updateTS();setInterval(updateTS,1000);
+
+// ════════════════════════════════════
+// ADMIN — hash routing
+// ════════════════════════════════════
+function checkAdminHash(){
+  if(window.location.hash==='#admin'){openAdmin();}
+}
+window.addEventListener('hashchange',checkAdminHash);
+window.addEventListener('load',checkAdminHash);
+
+function openAdmin(){
+  document.getElementById('admin-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeAdmin(){
+  document.getElementById('admin-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  history.pushState(null,'',window.location.pathname);
+}
+
+function checkPw(){
+  const v=document.getElementById('pw-input').value;
+  if(v===ADMIN_PASSWORD){
+    document.getElementById('admin-lock').style.display='none';
+    document.getElementById('admin-content').classList.add('unlocked');
+    renderAdminList();
+  } else {
+    document.getElementById('pw-error').textContent='Incorrect password. Try again.';
+    document.getElementById('pw-input').value='';
+  }
+}
+
+// ════════════════════════════════════
+// ADMIN — project list
+// ════════════════════════════════════
+function renderAdminList(){
+  document.getElementById('admin-count').textContent=PROJECTS.length;
+  const el=document.getElementById('admin-project-list');
+  el.innerHTML=PROJECTS.map((p,i)=>`
+    <div class="admin-proj-card">
+      ${p.hero
+        ?`<img class="apc-img" src="${p.hero}" onerror="this.style.display='none'" alt="${p.title}"/>`
+        :`<div class="apc-img-placeholder">NO IMAGE YET</div>`}
+      <div class="apc-cat">${CAT_LABELS[p.category]||p.category}</div>
+      <div class="apc-title">${p.title}</div>
+      <div class="apc-year">${p.year||'—'}</div>
+      <div><span class="apc-badge">${(p.gallery||[]).length} gallery imgs</span></div>
+      <div class="apc-actions">
+        <button class="abtn" onclick="editProject(${i})">Edit</button>
+        <button class="abtn danger" onclick="quickDelete(${i})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+// ADMIN — form
+// ════════════════════════════════════
+let editingIndex = -1;
+
+function showAddForm(){
+  editingIndex=-1;
+  document.getElementById('form-title-label').textContent='Add New Project';
+  document.getElementById('delete-btn').style.display='none';
+  clearForm();
+  document.getElementById('project-form-wrap').style.display='block';
+  document.getElementById('project-form-wrap').scrollIntoView({behavior:'smooth'});
+  // Add one empty gallery row
+  document.getElementById('gallery-url-list').innerHTML='';
+  addGalleryRow();
+}
+
+function editProject(i){
+  editingIndex=i;
+  const p=PROJECTS[i];
+  document.getElementById('form-title-label').textContent='Edit Project';
+  document.getElementById('delete-btn').style.display='inline-block';
+  document.getElementById('f-title').value=p.title||'';
+  document.getElementById('f-cat').value=p.category||'';
+  document.getElementById('f-year').value=p.year||'';
+  document.getElementById('f-tags').value=(p.tags||[]).join(', ');
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-ifc').value=p.ifc||'';
+  document.getElementById('f-hero').value=p.hero||'';
+  previewHero();
+  // Gallery rows
+  const gl=document.getElementById('gallery-url-list');
+  gl.innerHTML='';
+  (p.gallery||[]).forEach(url=>addGalleryRow(url));
+  if((p.gallery||[]).length===0)addGalleryRow();
+  refreshGalleryPreview();
+  document.getElementById('project-form-wrap').style.display='block';
+  document.getElementById('project-form-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+function clearForm(){
+  ['f-title','f-cat','f-year','f-tags','f-desc','f-ifc','f-hero'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('hero-preview').innerHTML='';
+  document.getElementById('gallery-preview').innerHTML='';
+  document.getElementById('gallery-url-list').innerHTML='';
+}
+
+function cancelForm(){
+  document.getElementById('project-form-wrap').style.display='none';
+  editingIndex=-1;
+}
+
+function addGalleryRow(val=''){
+  const row=document.createElement('div');
+  row.className='gallery-url-row';
+  row.innerHTML=`
+    <input type="text" placeholder="images/interior/project-detail-01.jpg" value="${val}" oninput="refreshGalleryPreview()"/>
+    <button class="gurl-remove" onclick="this.parentElement.remove();refreshGalleryPreview()">✕</button>`;
+  document.getElementById('gallery-url-list').appendChild(row);
+}
+
+function previewHero(){
+  const url=document.getElementById('f-hero').value.trim();
+  const el=document.getElementById('hero-preview');
+  if(!url){el.innerHTML='';return;}
+  el.innerHTML=`<img src="${url}" style="width:120px;height:80px;object-fit:cover;border:1px solid var(--card-border);" onerror="this.parentElement.innerHTML='<span class=ip-broken>Cannot load image</span>'"/>`;
+}
+
+function refreshGalleryPreview(){
+  const urls=getGalleryURLs();
+  const el=document.getElementById('gallery-preview');
+  if(!urls.length){el.innerHTML='';return;}
+  el.innerHTML=urls.map(u=>`<img src="${u}" onerror="this.outerHTML='<span class=ip-broken>✕</span>'" style="width:72px;height:54px;object-fit:cover;border:1px solid var(--card-border);"/>`).join('');
+}
+
+function getGalleryURLs(){
+  return Array.from(document.querySelectorAll('#gallery-url-list input'))
+    .map(i=>i.value.trim()).filter(Boolean);
+}
+
+function saveProject(){
+  const title=document.getElementById('f-title').value.trim();
+  const cat=document.getElementById('f-cat').value;
+  if(!title){showToast('Please enter a project title');return;}
+  if(!cat){showToast('Please select a category');return;}
+
+  const tagsRaw=document.getElementById('f-tags').value;
+  const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim()).filter(Boolean):[];
+  const ifcVal=document.getElementById('f-ifc').value.trim()||IFC_SUGGESTIONS[cat]||null;
+
+  const proj={
+    id: editingIndex>=0 ? PROJECTS[editingIndex].id : Date.now(),
+    title,
+    category:cat,
+    year:document.getElementById('f-year').value.trim()||new Date().getFullYear().toString(),
+    desc:document.getElementById('f-desc').value.trim(),
+    tags,
+    pal: editingIndex>=0&&PROJECTS[editingIndex].pal ? PROJECTS[editingIndex].pal : getPalette(cat),
+    ifc: ifcVal,
+    hero:document.getElementById('f-hero').value.trim(),
+    gallery:getGalleryURLs()
+  };
+
+  if(editingIndex>=0){PROJECTS[editingIndex]=proj;}
+  else{PROJECTS.push(proj);}
+
+  saveProjects(PROJECTS);
+  renderAdminList();
+  cancelForm();
+  populateProjects();
+  showToast(editingIndex>=0?'Project updated ✓':'Project added ✓');
+  editingIndex=-1;
+}
+
+function quickDelete(i){
+  if(!confirm('Delete "'+PROJECTS[i].title+'"?'))return;
+  PROJECTS.splice(i,1);
+  saveProjects(PROJECTS);
+  renderAdminList();
+  populateProjects();
+  showToast('Project deleted');
+}
+
+function deleteProject(){
+  if(editingIndex<0)return;
+  quickDelete(editingIndex);
+  cancelForm();
+  editingIndex=-1;
+}
+
+function getPalette(cat){
+  const P={
+    bim:['#6090c8','#3870a8','#185088','#083068','#88b0e8'],
+    interior:['#c8a060','#a88040','#886020','#684000','#e8c080'],
+    infrastructure:['#70a840','#509020','#306800','#184800','#90c860'],
+    residential:['#c8b890','#a89060','#887040','#685020','#e8d8b0'],
+    computational:['#e8a870','#d07840','#b05820','#8b4010','#f0c080'],
+    coding:['#5880c8','#3860a8','#184088','#082068','#78a0e8'],
+    heritage:['#c8b080','#a89060','#887040','#685020','#e8d0a0'],
+    retail:['#e0d8c8','#c8c0a8','#b0a888','#989068','#f8f0e0'],
+    facade:['#70b0d8','#5098c0','#3080a8','#106890','#90d0f0'],
+    photography:['#909088','#707068','#505048','#303028','#b0b0a8'],
+    sketch:['#f0e8d8','#d8c8a8','#c0a878','#a88848','#e8d8b8']
+  };
+  return P[cat]||P.bim;
+}
+
+// ════════════════════════════════════
+// TOAST
+// ════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('admin-toast');
+  t.textContent=msg;t.style.opacity='1';
+  setTimeout(()=>t.style.opacity='0',2500);
+}
+
+// ════════════════════════════════════
+// EXPORT HTML
+// ════════════════════════════════════
+function exportHTML(){
+  // Get current page HTML
+  const html=document.documentElement.outerHTML;
+  // Replace the PROJECTS variable with current data
+  const exportedProjects=JSON.stringify(PROJECTS,null,2);
+  // We inject baked projects by replacing the loadProjects function return
+  const marker='return JSON.parse(JSON.stringify(DEFAULT_PROJECTS));';
+  const replacement=`return ${exportedProjects};`;
+  const exportHTML2=html.replace(marker,replacement);
+  downloadFile('index.html',exportHTML2,'text/html');
+  showToast('Exported index.html — upload to Bluehost ✓');
+}
+
+function exportProjectsJSON(){
+  downloadFile('mj_projects_backup.json',JSON.stringify(PROJECTS,null,2),'application/json');
+  showToast('Projects backup downloaded ✓');
+}
+
+function importProjectsJSON(input){
+  const f=input.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(Array.isArray(data)){
+        PROJECTS=data;saveProjects(PROJECTS);renderAdminList();populateProjects();
+        showToast('Projects imported: '+data.length+' items ✓');
+      }else{showToast('Invalid JSON format');}
+    }catch(err){showToast('Could not parse JSON file');}
+  };
+  reader.readAsText(f);
+  input.value='';
+}
+
+function downloadFile(filename,content,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=filename;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+// IFC autofill on category change
+document.getElementById('f-cat').addEventListener('change',function(){
+  const ifcEl=document.getElementById('f-ifc');
+  if(!ifcEl.value||ifcEl.value===IFC_SUGGESTIONS[ifcEl.dataset.lastCat||'']){
+    ifcEl.value=IFC_SUGGESTIONS[this.value]||'';
+  }
+  ifcEl.dataset.lastCat=this.value;
+});
+
+// ════════════════════════════════════
+// INTRO  dot → line → polygon → 4D
+// ════════════════════════════════════
+const iC = document.getElementById('intro-canvas');
+const iX = iC.getContext('2d');
+let iW, iH, iRun = true, iRAF, iStart = null;
+
+function rsz() {
+  iW = iC.width = window.innerWidth;
+  iH = iC.height = window.innerHeight;
+}
+rsz();
+window.addEventListener('resize', rsz);
+
+// Cube geometry for 4D phase
+const CV = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+const CE = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
+function p3(v, rot, cx, cy, sc) {
+  let [x,y,z] = v;
+  let rx = x*Math.cos(rot) - z*Math.sin(rot);
+  let rz2 = x*Math.sin(rot) + z*Math.cos(rot);
+  let ry = y*Math.cos(rot*0.45) - rz2*Math.sin(rot*0.45);
+  let rz3 = y*Math.sin(rot*0.45) + rz2*Math.cos(rot*0.45);
+  let pz = rz3 + 5;
+  return [cx + (rx*sc*600)/pz, cy + (ry*sc*600)/pz];
+}
+
+function drawIntroFrame(ts) {
+  if (!iRun) return;
+  if (!iStart) iStart = ts;
+  const t = (ts - iStart) / 1000;
+
+  // Background
+  iX.fillStyle = '#f0ece4';
+  iX.fillRect(0, 0, iW, iH);
+
+  // Blueprint grid
+  iX.strokeStyle = 'rgba(13,50,120,0.3)';
+  iX.lineWidth = 0.5;
+  for (let x = 0; x < iW; x += 20) { iX.beginPath(); iX.moveTo(x,0); iX.lineTo(x,iH); iX.stroke(); }
+  for (let y = 0; y < iH; y += 20) { iX.beginPath(); iX.moveTo(0,y); iX.lineTo(iW,y); iX.stroke(); }
+  iX.strokeStyle = 'rgba(13,50,120,0.55)';
+  iX.lineWidth = 0.9;
+  for (let x = 0; x < iW; x += 100) { iX.beginPath(); iX.moveTo(x,0); iX.lineTo(x,iH); iX.stroke(); }
+  for (let y = 0; y < iH; y += 100) { iX.beginPath(); iX.moveTo(0,y); iX.lineTo(iW,y); iX.stroke(); }
+
+  const cx = iW / 2, cy = iH / 2;
+
+  // PHASE 0 (0 – 1.2s): DOT
+  if (t < 1.2) {
+    const p = t / 1.2;
+    const r = 4 + p * 8;
+    iX.beginPath();
+    iX.arc(cx, cy, r, 0, Math.PI * 2);
+    iX.fillStyle = 'rgba(13,50,120,0.9)';
+    iX.fill();
+    // Pulse ring
+    iX.beginPath();
+    iX.arc(cx, cy, r * 3 * p, 0, Math.PI * 2);
+    iX.strokeStyle = 'rgba(13,50,120,' + (0.4 * (1-p)) + ')';
+    iX.lineWidth = 1.5;
+    iX.stroke();
+    // Label
+    if (p > 0.5) {
+      iX.font = 'bold 12px Share Tech Mono, monospace';
+      iX.fillStyle = 'rgba(13,50,120,' + Math.min(1, (p-0.5)*4) + ')';
+      iX.textAlign = 'center';
+      iX.fillText('IfcCartesianPoint  ·  Coordinates(0,0,0)', cx, cy + 55);
+    }
+  }
+
+  // PHASE 1 (1.2 – 3.0s): LINE
+  else if (t < 3.0) {
+    const p = Math.min(1, (t - 1.2) / 1.8);
+    const len = iW * 0.72;
+    const lx0 = cx - len/2;
+    const lx1 = lx0 + len * p;
+    // Origin dot
+    iX.beginPath();
+    iX.arc(cx, cy, 5, 0, Math.PI * 2);
+    iX.fillStyle = 'rgba(13,50,120,1)';
+    iX.fill();
+    // Line
+    iX.beginPath();
+    iX.moveTo(lx0, cy);
+    iX.lineTo(lx1, cy);
+    iX.strokeStyle = 'rgba(13,50,120,1)';
+    iX.lineWidth = 2;
+    iX.stroke();
+    // Moving endpoint dot
+    iX.beginPath();
+    iX.arc(lx1, cy, 4, 0, Math.PI * 2);
+    iX.fillStyle = 'rgba(13,50,120,0.9)';
+    iX.fill();
+    // Endpoint ticks
+    if (p > 0.9) {
+      const a = (p - 0.9) / 0.1;
+      iX.strokeStyle = 'rgba(13,50,120,' + (0.8*a) + ')';
+      iX.lineWidth = 1;
+      [lx0, lx1].forEach(px => {
+        iX.beginPath(); iX.moveTo(px, cy-12); iX.lineTo(px, cy+12); iX.stroke();
+      });
+    }
+    // Labels
+    iX.font = 'bold 12px Share Tech Mono, monospace';
+    iX.fillStyle = 'rgba(13,50,120,' + Math.min(1, p * 3) + ')';
+    iX.textAlign = 'center';
+    iX.fillText('IfcLine  ·  IfcVector  ·  direction:(1,0,0)', cx, cy + 52);
+    if (p > 0.4) {
+      iX.font = '11px Share Tech Mono, monospace';
+      iX.fillStyle = 'rgba(13,50,120,' + Math.min(0.7, (p-0.4)*2) + ')';
+      iX.fillText('a line is a point extended through time', cx, cy + 72);
+    }
+  }
+
+  // PHASE 2 (3.0 – 4.8s): POLYGON
+  else if (t < 4.8) {
+    const p = Math.min(1, (t - 3.0) / 1.8);
+    const sides = Math.max(3, Math.round(3 + p * 5));
+    const R = Math.min(iW, iH) * 0.24;
+    // Draw evolving polygon
+    for (let s = 3; s <= sides; s++) {
+      const faded = s < sides;
+      iX.strokeStyle = faded ? 'rgba(13,50,120,0.2)' : 'rgba(13,50,120,1)';
+      iX.lineWidth = faded ? 0.5 : 2;
+      iX.beginPath();
+      for (let i = 0; i <= s; i++) {
+        const a = (i/s) * Math.PI*2 - Math.PI/2;
+        const r = R * (faded ? 0.7 + 0.3*(s/sides) : 1);
+        i === 0 ? iX.moveTo(cx + r*Math.cos(a), cy + r*Math.sin(a))
+                : iX.lineTo(cx + r*Math.cos(a), cy + r*Math.sin(a));
+      }
+      iX.closePath();
+      iX.stroke();
+    }
+    // Vertex dots
+    for (let i = 0; i < sides; i++) {
+      const a = (i/sides) * Math.PI*2 - Math.PI/2;
+      iX.beginPath();
+      iX.arc(cx + R*Math.cos(a), cy + R*Math.sin(a), 4, 0, Math.PI*2);
+      iX.fillStyle = 'rgba(13,50,120,1)';
+      iX.fill();
+    }
+    // Internal diagonals
+    if (p > 0.5) {
+      const da = (p - 0.5) / 0.5;
+      for (let i = 0; i < sides; i++) {
+        for (let j = i+2; j < sides; j++) {
+          const a1 = (i/sides)*Math.PI*2 - Math.PI/2;
+          const a2 = (j/sides)*Math.PI*2 - Math.PI/2;
+          iX.beginPath();
+          iX.moveTo(cx + R*Math.cos(a1), cy + R*Math.sin(a1));
+          iX.lineTo(cx + R*Math.cos(a2), cy + R*Math.sin(a2));
+          iX.strokeStyle = 'rgba(13,50,120,' + (0.2*da) + ')';
+          iX.lineWidth = 0.5;
+          iX.stroke();
+        }
+      }
+    }
+    iX.font = 'bold 12px Share Tech Mono, monospace';
+    iX.fillStyle = 'rgba(13,50,120,0.9)';
+    iX.textAlign = 'center';
+    iX.fillText('IfcPolygon  ·  vertices:' + sides + '  ·  IfcPolyline', cx, cy + R + 50);
+  }
+
+  // PHASE 3 (4.8 – 7.2s): 4D BIM WIREFRAME
+  else if (t < 7.2) {
+    const p = Math.min(1, (t - 4.8) / 2.4);
+    const rot = p * Math.PI * 1.7;
+    const sc = 0.85 + p * 0.28;
+    // 3 nested cubes
+    for (let k = 0; k < 3; k++) {
+      const kf = 1 - k*0.28;
+      const ks = sc * (1 - k*0.12);
+      const al = Math.min(1, (0.95 - k*0.28) * p * 1.5);
+      CE.forEach(([a,b]) => {
+        const pa = p3(CV[a].map(v => v*kf), rot, cx, cy, 130*ks);
+        const pb = p3(CV[b].map(v => v*kf), rot, cx, cy, 130*ks);
+        iX.beginPath();
+        iX.moveTo(pa[0], pa[1]);
+        iX.lineTo(pb[0], pb[1]);
+        iX.strokeStyle = k===0 ? 'rgba(13,50,120,'+al+')' : 'rgba(30,80,160,'+al+')';
+        iX.lineWidth = k===0 ? 1.5 : 0.7;
+        iX.stroke();
+      });
+      if (k === 0) {
+        CV.forEach(v => {
+          const pp = p3(v, rot, cx, cy, 130*ks);
+          iX.beginPath();
+          iX.arc(pp[0], pp[1], 3, 0, Math.PI*2);
+          iX.fillStyle = 'rgba(13,50,120,' + al + ')';
+          iX.fill();
+        });
+      }
+    }
+    // IFC metadata stream
+    if (p > 0.3) {
+      const ma = (p - 0.3) / 0.7;
+      const lines = [
+        'IfcBuildingElement · DEFINED',
+        'GlobalId: 2O2Fr$t4X7Zf8NOew',
+        'IfcPropertySet: Pset_BuildingUse',
+        'Phase.Construction · 4D Sequence',
+        'Cost.Data · 5D Estimation',
+        'Energy.Model · 6D Analysis',
+        'FM.Asset · 7D Operations'
+      ];
+      iX.font = '10px Share Tech Mono, monospace';
+      iX.textAlign = 'left';
+      lines.forEach((l, i) => {
+        const la = Math.max(0, (ma - i*0.1) * 3);
+        iX.fillStyle = 'rgba(13,50,120,' + Math.min(0.85, la) + ')';
+        iX.fillText(l, cx + 160, cy - 60 + i*22);
+      });
+    }
+    iX.font = 'bold 13px Share Tech Mono, monospace';
+    iX.fillStyle = 'rgba(13,50,120,' + (0.9*p) + ')';
+    iX.textAlign = 'center';
+    iX.fillText('4D · 5D · 6D · 7D  —  Building Information Modelling', cx, cy + 215);
+  }
+
+  // FADE OUT
+  else {
+    const f = Math.min(1, (t - 7.2) / 0.8);
+    iX.fillStyle = 'rgba(240,236,228,' + f + ')';
+    iX.fillRect(0, 0, iW, iH);
+    if (f >= 1) { endIntro(); return; }
+  }
+
+  iRAF = requestAnimationFrame(drawIntroFrame);
+}
+
+// Start immediately
+requestAnimationFrame(drawIntroFrame);
+
+function endIntro() {
+  if (!iRun) return;
+  iRun = false;
+  cancelAnimationFrame(iRAF);
+  iC.style.transition = 'opacity 0.8s ease';
+  iC.style.opacity = '0';
+  document.getElementById('skip-btn').style.display = 'none';
+  setTimeout(() => {
+    iC.style.display = 'none';
+    document.getElementById('site').classList.add('visible');
+    // Try to load from projects.json (permanent storage), then fall back
+    fetchProjectsFromFile().then(fetched => {
+      if(fetched && fetched.length > 0){
+        PROJECTS = fetched;
+        // Also update localStorage so admin sees same data
+        saveProjects(PROJECTS);
+      }
+      populateProjects();
+    });
+    populateSkills();
+    populateExpertise();
+    populateTimeline();
+  }, 850);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') endIntro(); });
+
+// ════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════
+let vInit=false;
+function showPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  document.getElementById('nav-'+n).classList.add('active');
+  if(n==='projects'){populateProjects();}
+  if(n==='about')setTimeout(animateSkillBars,300);
+  if(n==='resources')populateResources();
+  if(n==='viewer'&&!vInit){initViewer();vInit=true;}
+  return false;
+}
+
+// ════════════════════════════════════
+// PROJECTS GRID
+// ════════════════════════════════════
+function populateProjects(){
+  activeCats.clear(); // reset any stale filter state
+  const grid=document.getElementById('project-grid');grid.innerHTML='';
+  const visProjects=PROJECTS.filter(p=>p.visible!==false);
+  const count=document.getElementById('proj-count');if(count)count.textContent=visProjects.length;
+  visProjects.forEach(p=>{
+    const catLabel=CAT_LABELS[p.category]||p.category||'Project';
+    const card=document.createElement('div');
+    card.className='project-card';
+    card.dataset.cat=p.category||'';
+    card.dataset.title=(p.title||'').toLowerCase();
+    card.dataset.tags=(p.tags||[]).join(',').toLowerCase();
+    card.dataset.year=String(p.year||'');
+    const hasImg=p.hero&&p.hero.trim();
+    const safeId='cc-'+String(p.id||Math.random()).replace(/[^a-zA-Z0-9_-]/g,'_');
+    card.innerHTML=`
+      ${hasImg
+        ?`<img class="card-img" src="${p.hero}" alt="${p.title}" onerror="this.style.display='none';document.getElementById('${safeId}').style.display='block'"/><canvas class="card-canvas-el" id="${safeId}" width="320" height="240" style="display:none;"></canvas>`
+        :`<canvas class="card-canvas-el" id="${safeId}" width="320" height="240"></canvas>`}
+      <div class="card-overlay"></div>
+      <svg class="card-wsv" viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+        <line x1="0" y1="0" x2="320" y2="240" stroke="#0d3d8a" stroke-width="0.4" opacity="0.2"/>
+        <line x1="320" y1="0" x2="0" y2="240" stroke="#0d3d8a" stroke-width="0.4" opacity="0.2"/>
+        <rect x="12" y="12" width="296" height="216" stroke="#0d3d8a" stroke-width="0.5" fill="none" opacity="0.2"/>
+      </svg>
+      ${(p.ifc)?`<div class="card-ifc">${p.ifc.split(' · ').slice(0,4).join('<br>')}</div>`:''}
+      <div class="card-info">
+        <div class="card-category">${catLabel}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-year">${p.year||''}</div>
+      </div>`;
+    card.addEventListener('click',()=>openModal(p));
+    grid.appendChild(card);
+    if(!hasImg)requestAnimationFrame(()=>drawCardById(safeId,p));
+  });
+  // Build category filter buttons from project data
+  buildCatFilter();
+  // Show count
+  const countEl = document.getElementById('proj-result-count');
+  if(countEl) countEl.innerHTML = `<span>${visProjects.length}</span> projects`;
+  // Force all cards visible (safety net)
+  const allCards = document.querySelectorAll('#project-grid .project-card');
+  allCards.forEach(c => { c.style.display = ''; c.style.opacity = '1'; });
+  console.log('[MJ] populateProjects rendered', allCards.length, 'cards from', PROJECTS.length, 'total,', visProjects.length, 'visible');
+}
+
+function drawCardById(safeId,p){
+  const c=document.getElementById(safeId);if(!c)return;
+  drawCardOnCanvas(c,p);
+}
+function drawCard(p){
+  const safeId='cc-'+String(p.id||'').replace(/[^a-zA-Z0-9_-]/g,'_');
+  const c=document.getElementById(safeId);if(!c)return;
+  drawCardOnCanvas(c,p);
+}
+function drawCardOnCanvas(c,p){
+  const ctx=c.getContext('2d');const W=320,H=240,pl=p.pal||getPalette(p.category);
+  const g=ctx.createLinearGradient(0,0,W,H);
+  pl.forEach((col,i)=>g.addColorStop(i/(pl.length-1),col));
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const rg=ctx.createRadialGradient(W*.65,H*.3,0,W*.65,H*.3,W*.7);
+  rg.addColorStop(0,'rgba(255,255,255,0.3)');rg.addColorStop(1,'rgba(0,0,0,0.2)');
+  ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+  ctx.save();const cat=p.category;
+  if(cat==='bim'||cat==='residential'){ctx.strokeStyle='rgba(255,255,255,0.75)';ctx.lineWidth=1.5;[[28,28,125,80],[162,28,130,80],[28,118,125,92],[162,118,130,92]].forEach(([x,y,w,h])=>ctx.strokeRect(x,y,w,h));ctx.beginPath();ctx.arc(153,63,20,0,Math.PI/2);ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=0.8;ctx.stroke();ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(290,22);ctx.lineTo(290,42);ctx.stroke();ctx.beginPath();ctx.moveTo(286,30);ctx.lineTo(290,22);ctx.lineTo(294,30);ctx.stroke();ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 8px Share Tech Mono,monospace';ctx.textAlign='center';ctx.fillText('N',290,54);}
+  else if(cat==='infrastructure'){ctx.strokeStyle='rgba(255,255,255,0.85)';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(0,145);ctx.bezierCurveTo(80,85,240,165,320,105);ctx.stroke();ctx.lineWidth=1;ctx.setLineDash([5,4]);ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.beginPath();ctx.moveTo(0,158);ctx.bezierCurveTo(80,98,240,178,320,118);ctx.stroke();ctx.beginPath();ctx.moveTo(0,132);ctx.bezierCurveTo(80,72,240,152,320,92);ctx.stroke();ctx.setLineDash([]);for(let x=50;x<320;x+=55){ctx.beginPath();ctx.moveTo(x,118-18);ctx.lineTo(x,118+18);ctx.strokeStyle='rgba(255,255,255,0.55)';ctx.lineWidth=0.9;ctx.stroke();}}
+  else if(cat==='interior'){const vp=[160,90];ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=0.7;[[0,0],[320,0],[0,240],[320,240]].forEach(([x,y])=>{ctx.beginPath();ctx.moveTo(vp[0],vp[1]);ctx.lineTo(x,y);ctx.stroke();});ctx.strokeStyle='rgba(255,255,255,0.75)';ctx.lineWidth=1.8;ctx.strokeRect(55,165,210,55);ctx.strokeRect(65,153,32,14);ctx.strokeRect(223,153,32,14);ctx.beginPath();ctx.arc(160,55,32,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,0.55)';ctx.lineWidth=1;ctx.stroke();}
+  else if(cat==='computational'){for(let r=0;r<=10;r++){ctx.beginPath();for(let c2=0;c2<=14;c2++){const x=c2*(W/14),y=r*(H/10),w2=Math.sin((c2/14)*Math.PI*2.5+(r/10)*Math.PI)*22+Math.cos((r/10)*Math.PI*3.2)*12;c2===0?ctx.moveTo(x,y+w2):ctx.lineTo(x,y+w2);}ctx.strokeStyle=`rgba(255,255,255,${0.18+r/10*.5})`;ctx.lineWidth=0.9;ctx.stroke();}}
+  else if(cat==='facade'){const pw=30,ph=42;for(let col=0;col<11;col++)for(let row=0;row<6;row++){const x=col*pw,y=row*ph,l=0.15+Math.sin(col*.9+row*.6)*0.12;ctx.fillStyle=`rgba(255,255,255,${l})`;ctx.fillRect(x+1,y+1,pw-2,ph-2);ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.lineWidth=0.8;ctx.strokeRect(x,y,pw,ph);}}
+  else if(cat==='coding'){const ns=[[55,45],[195,38],[115,105],[245,128],[65,172],[175,188],[298,75],[28,118]];ns.forEach(([x,y],i)=>{ns.forEach(([x2,y2],j)=>{if(j>i&&Math.hypot(x2-x,y2-y)<135){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=0.6;ctx.stroke();}});ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fill();});}
+  else if(cat==='heritage'){ctx.strokeStyle='rgba(255,255,255,0.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(60,235);ctx.lineTo(60,130);ctx.bezierCurveTo(60,75,260,75,260,130);ctx.lineTo(260,235);ctx.stroke();ctx.lineWidth=1.3;[[80,80,160,130],[100,80,110,130]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,235);ctx.lineTo(x1,y2);ctx.bezierCurveTo(x1,y1,x2,y1,x2,y2);ctx.lineTo(x2,235);ctx.stroke();});ctx.lineWidth=0.9;ctx.beginPath();ctx.arc(160,85,22,0,Math.PI*2);ctx.stroke();}
+  else if(cat==='retail'){for(let i=0;i<9;i++){const y=22+i*24;ctx.beginPath();for(let x=0;x<=W;x+=4){const yt=y+Math.sin(x/W*Math.PI*3.2+i*.9)*16;x===0?ctx.moveTo(x,yt):ctx.lineTo(x,yt);}ctx.strokeStyle=`rgba(255,255,255,${0.28+i*.04})`;ctx.lineWidth=1;ctx.stroke();}}
+  else if(cat==='photography'){ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(0,0,W,H);for(let i=0;i<7;i++){ctx.fillStyle=`rgba(0,0,0,${0.12+i*.018})`;ctx.fillRect(i*50-10,0,32,H);}ctx.fillStyle='rgba(255,255,255,0.1)';ctx.beginPath();ctx.moveTo(75,0);ctx.lineTo(155,0);ctx.lineTo(195,H);ctx.lineTo(55,H);ctx.closePath();ctx.fill();}
+  else if(cat==='sketch'){ctx.fillStyle='rgba(255,255,255,0.18)';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(40,20,5,0.65)';ctx.lineWidth=1.3;for(let i=0;i<5;i++){ctx.beginPath();const y=30+i*38;ctx.moveTo(25,y);for(let x=25;x<W-20;x+=10){ctx.lineTo(x,y+Math.sin(x*.28)*2.5+(Math.random()-.5)*1.8);}ctx.stroke();}ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(55,210);ctx.lineTo(55,95);ctx.lineTo(125,58);ctx.lineTo(195,95);ctx.lineTo(195,210);ctx.closePath();ctx.stroke();}
+  ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='7px Share Tech Mono,monospace';
+  ctx.textAlign='left';ctx.fillText('MJ.'+String(p.id).padStart(3,'0'),6,11);
+  ctx.textAlign='right';ctx.fillText(p.year||'',W-6,11);
+}
+
+// ── Active category filters (multi-select) ──────────
+let activeCats = new Set(); // empty = show all
+
+function buildCatFilter(){
+  // Derive from the PROJECTS array directly — DOM may not be ready yet
+  const catsInUse = [...new Set(
+    PROJECTS.filter(p=>p.visible!==false).map(p=>p.category).filter(Boolean)
+  )];
+  const el = document.getElementById('proj-cat-filter');
+  if(!el) return;
+  el.innerHTML = catsInUse.map(k =>
+    `<button class="cat-btn" data-cat="${k}" onclick="toggleCat(this,'${k}')"><span>${CAT_LABELS[k]||k}</span></button>`
+  ).join('');
+}
+
+function toggleCat(btn, cat){
+  if(activeCats.has(cat)){
+    activeCats.delete(cat);
+    btn.classList.remove('active');
+  } else {
+    activeCats.add(cat);
+    btn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function clearFilters(){
+  activeCats.clear();
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('proj-search').value='';
+  document.getElementById('proj-sort').value='default';
+  applyFilters();
+}
+
+function applyFilters(){
+  const query = (document.getElementById('proj-search')?.value||'').toLowerCase().trim();
+  const sort  = document.getElementById('proj-sort')?.value || 'default';
+  const hasFilter = activeCats.size>0 || query;
+
+  // Show/hide clear button
+  const clearBtn = document.getElementById('proj-clear');
+  if(clearBtn) clearBtn.classList.toggle('visible', !!hasFilter);
+
+  // Get all cards
+  const grid = document.getElementById('project-grid');
+  if(!grid) return;
+  let cards = Array.from(grid.querySelectorAll('.project-card'));
+
+  // Filter
+  let visible = 0;
+  cards.forEach(card => {
+    const catOk  = activeCats.size===0 || activeCats.has(card.dataset.cat);
+    const title  = (card.dataset.title||'').toLowerCase();
+    const tags   = (card.dataset.tags||'').toLowerCase();
+    const year   = (card.dataset.year||'').toLowerCase();
+    const cat    = (card.dataset.cat||'').toLowerCase();
+    const searchOk = !query || title.includes(query)||tags.includes(query)||year.includes(query)||cat.includes(query);
+    const show = catOk && searchOk;
+    if(show){
+      card.style.display='';
+      card.style.opacity='1';
+      visible++;
+    } else {
+      card.style.display='none';
+    }
+  });
+
+  // Sort visible cards
+  if(sort !== 'default'){
+    const visCards = cards.filter(c=>c.style.display!=='none');
+    visCards.sort((a,b)=>{
+      if(sort==='year-desc') return parseInt(b.dataset.year||0)-parseInt(a.dataset.year||0);
+      if(sort==='year-asc')  return parseInt(a.dataset.year||0)-parseInt(b.dataset.year||0);
+      if(sort==='title-asc') return (a.dataset.title||'').localeCompare(b.dataset.title||'');
+      if(sort==='title-desc') return (b.dataset.title||'').localeCompare(a.dataset.title||'');
+      return 0;
+    });
+    visCards.forEach(c=>grid.appendChild(c));
+  }
+
+  // Update count display
+  const total = cards.length;
+  const countEl = document.getElementById('proj-result-count');
+  if(countEl){
+    if(hasFilter){
+      countEl.innerHTML = `<span>${visible}</span> / ${total} projects`;
+    } else {
+      countEl.innerHTML = `<span>${total}</span> projects`;
+    }
+  }
+}
+
+// Legacy — kept for compatibility
+function filterCat(btn,cat){
+  activeCats.clear();
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  if(cat!=='all'){activeCats.add(cat);btn.classList.add('active');}
+  applyFilters();
+}
+
+// ════════════════════════════════════
+// MODAL — hero image + gallery
+// ════════════════════════════════════
+let mS,mR,mC,mM,mI2,mRaf;
+
+function openModal(p){
+  const catLabel=CAT_LABELS[p.category]||p.category;
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-title').textContent=p.title;
+  document.getElementById('modal-cat').textContent=catLabel+' · '+(p.year||'');
+  document.getElementById('modal-desc').textContent=p.desc||'';
+  const hdr=p.ifc?`IfcBuildingElement · Name: "${p.title}" · GlobalId: ${gGuid()}<br>${p.ifc}`:`Name: "${p.title}" · ${p.year||''}`;
+  document.getElementById('modal-ifc-hdr').innerHTML=hdr;
+  document.getElementById('modal-tags').innerHTML=(p.tags||[]).map(t=>`<span class="modal-tag">${t}</span>`).join('');
+
+  // Build full image list: hero + gallery
+  const allImgs=[];
+  // hero can be a string URL
+  const heroUrl = typeof p.hero==='string' ? p.hero.trim() : (p.hero&&(p.hero.src||p.hero.url) ? (p.hero.src||p.hero.url).trim() : '');
+  if(heroUrl) allImgs.push(heroUrl);
+  // gallery items: strings OR {url, caption} OR {src, caption} (admin uses src)
+  (p.gallery||[]).forEach(u=>{
+    const url = typeof u==='string' ? u.trim() : (u ? (u.src||u.url||'').trim() : '');
+    if(url && url!==heroUrl) allImgs.push(url);
+  });
+
+  const heroEl=document.getElementById('modal-hero');
+  const galleryEl=document.getElementById('modal-gallery');
+
+  if(allImgs.length>0){
+    // Show hero image
+    heroEl.innerHTML=`<img class="modal-hero-img" id="modal-hero-img" src="${allImgs[0]}" alt="${p.title}" onerror="this.parentElement.innerHTML='<canvas class=modal-hero-canvas id=modal-canvas></canvas>';setTimeout(()=>initModalThree(p),80);"/>`;
+    // Gallery strip
+    // Rebuild with captions from gallery objects where available
+    const galleryItems = [];
+    const heroUrlG = typeof p.hero==='string' ? p.hero.trim() : (p.hero&&(p.hero.src||p.hero.url) ? (p.hero.src||p.hero.url).trim() : '');
+    if(heroUrlG) galleryItems.push({url:heroUrlG, caption:''});
+    (p.gallery||[]).forEach(u=>{
+      const url = typeof u==='string' ? u.trim() : (u ? (u.src||u.url||'').trim() : '');
+      const cap = typeof u==='object' && u.caption ? u.caption : '';
+      if(url && url!==heroUrlG) galleryItems.push({url, cap});
+    });
+    galleryEl.innerHTML=galleryItems.map((item,i)=>
+      `<img class="gallery-thumb${i===0?' active':''}" src="${item.url}" alt="${item.cap||'img '+(i+1)}"
+        title="${item.cap||''}"
+        onclick="switchHero('${item.url}',this)"
+        onerror="this.style.display='none'"/>`
+    ).join('');
+    galleryEl.style.display=galleryItems.length>1?'flex':'none';
+  } else {
+    // No images — show Three.js wireframe
+    heroEl.innerHTML=`<canvas class="modal-hero-canvas" id="modal-canvas"></canvas>`;
+    galleryEl.style.display='none';
+    setTimeout(()=>initModalThree(p),80);
+  }
+}
+
+function switchHero(url,thumb){
+  const heroImg=document.getElementById('modal-hero-img');
+  if(heroImg)heroImg.src=url;
+  document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function gGuid(){return Math.random().toString(36).substr(2,4).toUpperCase()+'$'+Math.random().toString(36).substr(2,4).toUpperCase()+'X'+Math.random().toString(36).substr(2,6).toUpperCase();}
+
+function initModalThree(p){
+  const canvas=document.getElementById('modal-canvas');if(!canvas)return;
+  const wrap=canvas.parentElement;
+  canvas.width=wrap.clientWidth||900;canvas.height=wrap.clientHeight||460;
+  if(mR){cancelAnimationFrame(mRaf);mR.dispose();}
+  mS=new THREE.Scene();mC=new THREE.PerspectiveCamera(55,canvas.width/canvas.height,.1,1000);mC.position.set(0,0,5);
+  mR=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});mR.setSize(canvas.width,canvas.height);mR.setClearColor(0,0);
+  const cat=p.category;let geo;
+  if(cat==='bim'||cat==='infrastructure')geo=new THREE.BoxGeometry(2.2,1.4,1.8,6,4,5);
+  else if(cat==='computational')geo=new THREE.IcosahedronGeometry(1.6,2);
+  else if(cat==='facade')geo=new THREE.BoxGeometry(2.8,1.8,0.4,10,7,2);
+  else if(cat==='residential')geo=new THREE.BoxGeometry(3,1.4,2,8,4,6);
+  else if(cat==='interior')geo=new THREE.BoxGeometry(2.5,1.2,2,8,3,6);
+  else if(cat==='coding')geo=new THREE.OctahedronGeometry(1.8,2);
+  else if(cat==='heritage')geo=new THREE.CylinderGeometry(0,1.7,2.8,8,5);
+  else if(cat==='retail')geo=new THREE.TorusGeometry(1.2,.4,8,18);
+  else geo=new THREE.DodecahedronGeometry(1.5,1);
+  mM=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x0d3d8a,wireframe:true,opacity:.65,transparent:true}));mS.add(mM);
+  mI2=new THREE.Mesh(new THREE.BoxGeometry(.7,.7,.7,2,2,2),new THREE.MeshBasicMaterial({color:0x2a5aaa,wireframe:true,opacity:.28,transparent:true}));mS.add(mI2);
+  const gh=new THREE.GridHelper(8,16,0xc8c0b0,0xddd8d0);gh.position.y=-2;mS.add(gh);
+  (function a(){mRaf=requestAnimationFrame(a);mM.rotation.y+=.005;mM.rotation.x+=.002;mI2.rotation.y-=.007;mI2.rotation.z+=.003;mR.render(mS,mC);})();
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  cancelAnimationFrame(mRaf);if(mR)mR.dispose();
+}
+
+
+// ════════════════════════════════════
+// RESOURCES
+// ════════════════════════════════════
+const RES_STORAGE_KEY = 'mj_resources';
+
+const DEFAULT_RESOURCES = [
+  {id:1, title:'BIMcollab Zoom — Quick Start Guide', type:'link', cat:'BIM Tools',
+   desc:'Official documentation and workspace setup guide for BIMcollab Zoom issue management.', url:'https://help.bimcollab.com', badge:'link'},
+  {id:2, title:'ACC (Autodesk Construction Cloud) Docs', type:'link', cat:'BIM Tools',
+   desc:'Full documentation for ACC platform, project setup, and document management workflows.', url:'https://knowledge.autodesk.com/support/autodesk-docs', badge:'link'},
+  {id:3, title:'buildingSMART IFC Documentation', type:'link', cat:'Open BIM',
+   desc:'Official IFC schema documentation, entity references, and Open BIM standards from buildingSMART International.', url:'https://technical.buildingsmart.org/standards/ifc', badge:'doc'},
+  {id:4, title:'IFC.js — Web-based IFC Viewer', type:'link', cat:'Open BIM',
+   desc:'Open source library for loading and viewing IFC models in the browser. The foundation of this viewer.', url:'https://ifcjs.github.io/info/', badge:'link'},
+  {id:5, title:'Grasshopper Primer', type:'tutorial', cat:'Computational Design',
+   desc:'Comprehensive introduction to Grasshopper parametric design for Rhino. Covers data trees, components and algorithmic logic.', url:'https://grasshopperprimer.com', badge:'tutorial'},
+  {id:6, title:'Revit API Developer Guide', type:'doc', cat:'Programming',
+   desc:'Official Autodesk documentation for the Revit API — essential reference for C# plugin and add-in development.', url:'https://help.autodesk.com/view/RVT/2025/ENU/?guid=Revit_API_Revit_API_Developers_Guide_html', badge:'doc'}
+];
+
+function loadResources(){
+  try{ const d=localStorage.getItem(RES_STORAGE_KEY); return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_RESOURCES)); }
+  catch(e){ return JSON.parse(JSON.stringify(DEFAULT_RESOURCES)); }
+}
+function saveResources(data){ localStorage.setItem(RES_STORAGE_KEY,JSON.stringify(data)); }
+
+let RESOURCES = loadResources();
+let resActiveCat = 'All';
+
+function populateResources(){
+  RESOURCES = loadResources();
+  const cats = ['All', ...new Set(RESOURCES.map(r=>r.cat))];
+  // Filter buttons
+  document.getElementById('res-filter').innerHTML = cats.map(c=>
+    `<button class="res-filter-btn${c===resActiveCat?' active':''}" onclick="filterRes('${c}')">${c}</button>`
+  ).join('');
+  renderResCards();
+}
+
+function filterRes(cat){
+  resActiveCat = cat;
+  document.querySelectorAll('.res-filter-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent===cat);
+  });
+  renderResCards();
+}
+
+function renderResCards(){
+  const filtered = resActiveCat==='All' ? RESOURCES : RESOURCES.filter(r=>r.cat===resActiveCat);
+  const grid = document.getElementById('res-grid');
+  const empty = document.getElementById('res-empty');
+  if(!filtered.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = filtered.map(r=>`
+    <div class="res-card" onclick="${r.url?`window.open('${r.url}','_blank')`:''}">
+      <div class="res-badge-${r.badge||'link'} res-card-badge">${r.badge||'link'}</div>
+      <div class="res-card-type">${r.type}</div>
+      <div class="res-card-title">${r.title}</div>
+      <div class="res-card-desc">${r.desc}</div>
+      <div class="res-card-footer">
+        <span class="res-card-cat">${r.cat}</span>
+        ${r.url?`<a class="res-card-link" href="${r.url}" target="_blank" onclick="event.stopPropagation()">Open ↗</a>`:'<span></span>'}
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+// ABOUT
+// ════════════════════════════════════
+const SKILLS=[
+  {name:'BIM & Open BIM',         pct:95},
+  {name:'CAD / Visualisation',    pct:92},
+  {name:'Computational Design',   pct:88},
+  {name:'Programming',            pct:85},
+  {name:'Management & Methods',   pct:87},
+  {name:'Fabrication & Research', pct:82},
+  {name:'Soft Skills',            pct:90},
+  {name:'AI / ML / Gen. Design',  pct:55, humble:true}
+];
+
+const EXPERTISE_CATS=[
+  {
+    en:'BIM & Open BIM', de:'BIM & Open BIM',
+    tags:['ACC (Autodesk Construction Cloud)','BIMcollab Zoom','NavVis iVION','Revit ARC 2022–2025','Autodesk Docs','Collaboration Pro','BAP & AIA','IFC 2×3 / IFC4','buildingSMART','#openBIM','#BCF','#ScanToBIM']
+  },
+  {
+    en:'Management & Methods', de:'Management & Methoden',
+    tags:['Atlassian Jira','Confluence','Scrum / Kanban','User Stories','Agile Methods','Git / GitLab / GitHub','Visual Studio']
+  },
+  {
+    en:'Computational Design', de:'Computational Design',
+    tags:['Grasshopper 6.0+','Rhinoceros','Python (GH)','Karamba 3D','Opossum','Evolutionary Optimisation','Parametric Façades']
+  },
+  {
+    en:'CAD / Visualisation', de:'CAD / Visualisation',
+    tags:['AutoCAD','ArchiCAD','Lumion','3D Studio Max','Sketchup','Adobe Photoshop','Adobe InDesign','Figma','Canva','Inkscape']
+  },
+  {
+    en:'Fabrication & Research', de:'Fertigung & Forschung',
+    tags:['3D Printing / FDM','Additive Manufacturing','Photogrammetry','Fassaden-Solarpanele','Arduino / Sensorik','Robotics','Kuka (KRC4)']
+  },
+  {
+    en:'Programming', de:'Programmierung',
+    tags:['C# / .NET','WPF / SDK','Revit API','IFC API','Microsoft .NET Apps','Python Scripting','Java','API Interfaces']
+  },
+  {
+    en:'AI / ML / Generative Design', de:'KI / ML / Generatives Entwerfen',
+    tags:['Machine Learning (Basics)','Generative Design','Evolutionary Algorithms','Opossum (ML Optimisation)','Dynamo Generative','AI-assisted Modelling','Neural Networks (Learning)','Prompt Engineering','LLM Integration']
+  },
+  {
+    en:'Soft Skills', de:'Soziale Kompetenzen',
+    tags:['Organisation & Time Management','Interdisciplinary Collaboration','Communication & Presentation','Detail Orientation','Multitasking','Self-reliance','Teamwork','Results-oriented Reporting','Stakeholder Coordination','Cross-cultural Work']
+  },
+  {
+    en:'Languages', de:'Sprachkenntnisse',
+    tags:['German — C1 (Listening · Reading · Writing)','English — C1','Spanish — A2','Dari / Pashto — Native']
+  }
+];
+const TIMELINE=[
+  {
+    year:'2025',
+    title:{en:'BIM Coordinator', de:'BIM Koordinator'},
+    sub:{en:'Hemminger Ingenieurbüro · Esslingen', de:'Hemminger Ingenieurbüro · Esslingen'},
+    highlights:{
+      en:['Coordinating BIM workflows across disciplines using OpenBIM standards','Managing IFC-based model federation and clash detection in BIMcollab','Developing Revit/Dynamo automation scripts to streamline documentation','Ensuring LOD compliance and IFC export quality for all project phases'],
+      de:['Koordination von BIM-Workflows über Fachgrenzen hinweg nach OpenBIM-Standards','Verwaltung der IFC-basierten Modellzusammenführung und Kollisionsprüfung in BIMcollab','Entwicklung von Revit/Dynamo-Automatisierungsskripten zur Dokumentationsoptimierung','Sicherstellung der LOD-Konformität und IFC-Exportqualität für alle Projektphasen']
+    }
+  },
+  {
+    year:'2023',
+    title:{en:'BIM Developer (Working Student)', de:'BIM Entwickler (Werkstudent)'},
+    sub:{en:'STRABAG Innovation & Digitalisation · Ed. Züblin AG · Stuttgart', de:'STRABAG Innovation & Digitalisation · Ed. Züblin AG · Stuttgart'},
+    highlights:{
+      en:['Developed custom IFC export/import pipelines using Python and C# APIs','Built Revit add-ins to automate quantity take-off and data enrichment','Integrated BIM models with project management tools via open APIs','Supported digital construction site workflows with model-based data'],
+      de:['Entwicklung von IFC-Export-/Import-Pipelines mit Python- und C#-APIs','Erstellung von Revit-Add-ins zur Automatisierung von Mengenermittlung und Datenanreicherung','Integration von BIM-Modellen mit Projektmanagement-Tools über offene APIs','Unterstützung digitaler Baustellenworkflows mit modellbasierten Daten']
+    }
+  },
+  {
+    year:'2023',
+    title:{en:'Research Assistant', de:'Wissenschaftliche Hilfskraft'},
+    sub:{en:'ITKE · Universität Stuttgart', de:'ITKE · Universität Stuttgart'},
+    highlights:{
+      en:['Supported research on computational design and digital fabrication methods','Worked with robotic fabrication systems and parametric design tools','Contributed to academic publications on integrative design technologies','Assisted in laboratory experiments with composite and timber structures'],
+      de:['Unterstützung der Forschung zu Computational Design und digitalen Fertigungsmethoden','Arbeit mit robotischen Fertigungssystemen und parametrischen Entwurfswerkzeugen','Beitrag zu wissenschaftlichen Publikationen über integrative Entwurfstechnologien','Assistenz bei Laborexperimenten mit Verbund- und Holzstrukturen']
+    }
+  },
+  {
+    year:'2022',
+    title:{en:'MSc Integrative Technologies (ITECH)', de:'MSc Integrative Technologien (ITECH)'},
+    titleLink:'https://www.itech.uni-stuttgart.de/itech-studio-projects/itech-research-pavilion-2024/',
+    sub:{en:'Universität Stuttgart · ITECH · Architectural Design Research', de:'Universität Stuttgart · ITECH · Architektonische Entwurfsforschung'},
+    highlights:{
+      en:['Bio-based hybrid architecture combining timber and natural fibres via multi-robot fabrication','Co-designed computational methods integrating timber compressive strength with fibre tensile capacity','Contributed to lightweight performative structures within the IntCDC Cluster of Excellence','Worked across ICD and ITKE institutes on regenerative, climate-positive construction approaches'],
+      de:['Bio-basierte Hybridarchitektur aus Holz und Naturfasern mittels Multi-Roboter-Fertigung','Ko-Design rechnerischer Methoden, die Holzdruckfestigkeit mit Faserzugkapazität verbinden','Beitrag zu leichten Tragstrukturen im Exzellenzcluster IntCDC','Interdisziplinäre Arbeit an den Instituten ICD und ITKE zu klimapositiven Bauweisen']
+    }
+  },
+  {
+    year:'2022',
+    title:{en:'Technical Project Management', de:'Technisches Projektmanagement'},
+    sub:{en:'Deutsche Bahn · Stuttgart–Ulm · BW', de:'Deutsche Bahn · Stuttgart–Ulm · BW'},
+    highlights:{
+      en:['Supported BIM coordination on large-scale rail infrastructure projects','Monitored construction progress using model-based site documentation','Collaborated with planners on clash resolution and design updates','Applied project management methods to complex multi-disciplinary teams'],
+      de:['Unterstützung der BIM-Koordination bei großen Schieneninfrastrukturprojekten','Überwachung des Baufortschritts mittels modellbasierter Baudokumentation','Zusammenarbeit mit Planern bei der Kollisionslösung und Designaktualisierung','Anwendung von Projektmanagementmethoden in komplexen interdisziplinären Teams']
+    }
+  },
+  {
+    year:'2022',
+    title:{en:'Voluntary Intern', de:'Freiwilliges Praktikum'},
+    sub:{en:'Planquadrat (Elfers Geskes Krämer PartG mbB) · Darmstadt', de:'Planquadrat (Elfers Geskes Krämer PartG mbB) · Darmstadt'},
+    highlights:{
+      en:['Assisted in architectural design and construction documentation','Produced technical drawings and 3D visualisations for planning submissions','Gained experience in residential and mixed-use building typologies','Supported team with CAD modelling and rendering tasks'],
+      de:['Mitarbeit bei architektonischen Entwurfs- und Ausführungsplanungen','Erstellung technischer Zeichnungen und 3D-Visualisierungen für Bauanträge','Erfahrungen mit Wohn- und Mischnutzungsgebäudetypologien','Unterstützung des Teams bei CAD-Modellierung und Rendering']
+    }
+  },
+  {
+    year:'2018',
+    title:{en:'Architect', de:'Architekt'},
+    sub:{en:'Presidential Palace · ARC Group · KBL, AFG', de:'Präsidentenpalast · ARC Group · KBL, AFG'},
+    highlights:{
+      en:['Led architectural design and site supervision for government projects','Coordinated multidisciplinary teams across structural, MEP, and interior design','Managed construction documentation and client communication','Delivered complex projects under challenging logistical conditions'],
+      de:['Leitung architektonischer Entwurfs- und Bauüberwachungsaufgaben für Regierungsprojekte','Koordination multidisziplinärer Teams in Tragwerk, TGA und Innenarchitektur','Verwaltung der Baudokumentation und Kundenkommunikation','Realisierung komplexer Projekte unter schwierigen logistischen Bedingungen']
+    }
+  },
+  {
+    year:'2011',
+    title:{en:'BArch Architecture', de:'BArch Architektur'},
+    sub:{en:'Universität Kabul · Akkreditiert durch ZAB', de:'Universität Kabul · Akkreditiert durch ZAB'},
+    highlights:{
+      en:['1st place award for the conceptual design of the Hillside Engineering Faculty of Kabul University','Graduation thesis exploring sustainable design strategies for arid and mountainous climates','Strong foundation in structural design, building physics, and construction documentation','Interdisciplinary studio culture bridging local vernacular traditions with modern design methods'],
+      de:['1. Preis für den konzeptuellen Entwurf der Hangbau-Ingenieursfakultät der Universität Kabul','Abschlussarbeit über nachhaltige Entwurfsstrategien für aride und bergige Klimazonen','Fundiertes Wissen in Tragwerksplanung, Bauphysik und Ausführungsplanung','Interdisziplinäre Entwurfskultur zwischen lokalem Bauerbe und modernen Entwurfsmethoden']
+    }
+  }
+];
+let currentLang='en';
+
+function setLang(l){
+  currentLang=l;
+  document.querySelectorAll('[data-lang]').forEach(el=>{
+    el.style.display = (el.dataset.lang===l) ? '' : 'none';
+  });
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('btn-de').classList.toggle('active',l==='de');
+  populateTimeline();
+}
+
+function populateSkills(){
+  document.getElementById('skills-list').innerHTML = SKILLS.map(s => {
+    const id = 'sb-'+s.name.replace(/\W/g,'');
+    const humbleNote = s.humble
+      ? `<span style="font-family:var(--font-tech);font-size:0.38rem;color:var(--text-dim);letter-spacing:0.06em;opacity:0.7;margin-left:0.6rem;font-style:italic;">still exploring</span>`
+      : '';
+    const barStyle = s.humble
+      ? `background:repeating-linear-gradient(90deg,var(--bp-glow) 0,var(--bp-glow) 5px,transparent 5px,transparent 9px);opacity:0.5;`
+      : `background:linear-gradient(90deg,var(--bp-glow),var(--bp-bright));`;
+    const dotStyle = s.humble ? `background:transparent;border:1px dashed var(--bp-glow);` : `background:var(--bp-glow);`;
+    return `<div class="skill-row" style="${s.humble?'margin-top:1.4rem;padding-top:1.4rem;border-top:1px dashed var(--card-border);':''}">
+      <div class="skill-name">${s.name}${humbleNote}</div>
+      <div class="skill-bar-wrap" style="position:relative;">
+        <div class="skill-bar" id="${id}" style="width:0%;${barStyle}">
+          <span style="position:absolute;right:-3px;top:-3.5px;width:7px;height:7px;border-radius:50%;display:block;${dotStyle}"></span>
+        </div>
+        ${s.humble ? `<span style="position:absolute;right:0;top:-10px;font-family:var(--font-tech);font-size:0.36rem;color:var(--text-dim);opacity:0.5;letter-spacing:0.05em;">∞ to learn</span>` : ''}
+      </div>
+      <div class="skill-pct" style="${s.humble?'opacity:0.55;':''}">
+        ${s.humble ? '55%' : s.pct+'%'}
+      </div>
+    </div>`;
+  }).join('')
+  + `<p style="font-family:var(--font-tech);font-size:0.41rem;color:var(--text-dim);letter-spacing:0.06em;opacity:0.5;margin-top:1.2rem;font-style:italic;line-height:1.8;border-top:1px solid var(--card-border);padding-top:1rem;">"The more I learn, the more I realise how much I don't know." The dashed bar is not a weakness — it is an open horizon.</p>`;
+}
+
+function animateSkillBars(){
+  SKILLS.forEach(s=>{const b=document.getElementById('sb-'+s.name.replace(/\W/g,''));if(b)b.style.width=s.pct+'%';});
+}
+
+function populateExpertise(){
+  const grid=document.getElementById('expertise-grid');
+  if(!grid)return;
+  grid.innerHTML=EXPERTISE_CATS.map(cat=>`
+    <div class="exp-category">
+      <div class="exp-cat-label">${cat[currentLang]||cat.en}</div>
+      <div class="exp-tags">${cat.tags.map(t=>`<span class="exp-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function populateTimeline(){
+  const timelineEl=document.getElementById('timeline');
+  if(!timelineEl)return;
+  const lang = currentLang==='de' ? 'de' : 'en';
+  const label = lang==='de' ? 'Karriere · IfcBuildingStorey' : 'Timeline · IfcRelDefines';
+  timelineEl.innerHTML=`<div class="skills-label" style="margin-bottom:1.2rem">${label}</div>`+
+    TIMELINE.map((t,i)=>{
+      const title = typeof t.title==='object' ? t.title[lang] : t.title;
+      const sub   = typeof t.sub==='object'   ? t.sub[lang]   : t.sub;
+      const hl    = t.highlights ? t.highlights[lang] : [];
+      const liItems = hl.map(h=>`<li>${h}</li>`).join('');
+      const titleHTML = t.titleLink
+        ? `<a href="${t.titleLink}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--bp-glow);opacity:0.9;" onclick="event.stopPropagation()">${title}</a>`
+        : title;
+      return `<div class="timeline-item" style="position:relative" onmouseenter="showTLPopup(this)" onmouseleave="hideTLPopup(this)">
+        <div class="t-year">${t.year}</div>
+        <div class="t-dot"></div>
+        <div><div class="t-title">${titleHTML}</div></div>
+        <div class="tl-popup">
+          <div class="tl-popup-org">${sub}</div>
+          <ul>${liItems}</ul>
+        </div>
+      </div>`;
+    }).join('');
+}
+function showTLPopup(el){const p=el.querySelector('.tl-popup');if(p)p.classList.add('visible');}
+function hideTLPopup(el){const p=el.querySelector('.tl-popup');if(p)p.classList.remove('visible');}
+
+// ════════════════════════════════════
+// IFC VIEWER
+// ════════════════════════════════════
+let vScene,vRend,vCam,vTgt,vLayers={},vWireframe=false,vExploded=false,ifcAPI=null,ifcModelMesh=null;
+const vLayDef=[{name:'IfcWall',col:0xc8b898,lbl:'Walls'},{name:'IfcSlab',col:0xa09080,lbl:'Slabs'},{name:'IfcColumn',col:0x7080a0,lbl:'Columns'},{name:'IfcBeam',col:0x607090,lbl:'Beams'},{name:'IfcDoor',col:0xd4a870,lbl:'Doors'},{name:'IfcWindow',col:0x88b8d8,lbl:'Windows'},{name:'IfcRoof',col:0x887060,lbl:'Roof'},{name:'IfcSpace',col:0xd8e8f0,lbl:'Spaces'}];
+function smat(col,op=1){return new THREE.MeshStandardMaterial({color:col,roughness:.7,metalness:0,transparent:op<1,opacity:op});}
+function initViewer(){
+  const canvas=document.getElementById('viewer-canvas'),wrap=document.getElementById('viewer-canvas-wrap');
+  canvas.width=wrap.clientWidth;canvas.height=wrap.clientHeight||620;
+  vScene=new THREE.Scene();vCam=new THREE.PerspectiveCamera(50,canvas.width/canvas.height,.1,1000);vCam.position.set(18,14,20);vTgt=new THREE.Vector3(0,4,0);vCam.lookAt(vTgt);
+  vRend=new THREE.WebGLRenderer({canvas,antialias:true});vRend.setSize(canvas.width,canvas.height);vRend.setClearColor(0xf0ece4,1);vRend.shadowMap.enabled=true;
+  vScene.add(new THREE.AmbientLight(0xe8e0d0,.7));const dl=new THREE.DirectionalLight(0xfff8f0,.8);dl.position.set(15,20,10);dl.castShadow=true;vScene.add(dl);vScene.add(new THREE.GridHelper(40,40,0xc8c0b0,0xddd8d0));
+  const gp=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0xede9e0,roughness:1}));gp.rotation.x=-Math.PI/2;gp.receiveShadow=true;vScene.add(gp);
+  buildModel();buildLayerUI();initOrbit(canvas);drawAxis();
+  // web-ifc loaded on first upload
+  (function av(){requestAnimationFrame(av);vRend.render(vScene,vCam);})();
+  window.addEventListener('resize',()=>{if(!vRend)return;const w2=wrap.clientWidth,h2=wrap.clientHeight;vCam.aspect=w2/h2;vCam.updateProjectionMatrix();vRend.setSize(w2,h2);});
+}
+function buildModel(){
+  const fH=3.6,fl=4;vLayDef.forEach(l=>{vLayers[l.name]={grp:new THREE.Group(),vis:true};vScene.add(vLayers[l.name].grp);});
+  for(let f=0;f<=fl;f++){const m=new THREE.Mesh(new THREE.BoxGeometry(12,.25,10),smat(vLayDef[1].col));m.position.set(0,f*fH-.125,0);m.castShadow=m.receiveShadow=true;m.userData.ifc='IfcSlab';vLayers.IfcSlab.grp.add(m);}
+  for(let f=0;f<fl;f++){const y=f*fH+fH/2;[[0,5,0,12,.25],[0,-5,0,12,.25],[6,0,Math.PI/2,10,.25],[-6,0,Math.PI/2,10,.25]].forEach(([x,z,ry,lx,lz])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(lx,fH-.25,lz),smat(vLayDef[0].col));m.position.set(x,y,z);m.rotation.y=ry;m.castShadow=true;m.userData.ifc='IfcWall';vLayers.IfcWall.grp.add(m);});[[-1,0,Math.PI/2,4.5],[2,2.5,0,5.5],[2,-2.5,0,5.5]].forEach(([x,z,ry,l])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(l,fH-.25,.18),smat(0xbab0a0));m.position.set(x,y,z);m.rotation.y=ry;vLayers.IfcWall.grp.add(m);});}
+  for(let f=0;f<fl;f++){[[-5,4.5],[5,4.5],[-5,-4.5],[5,-4.5],[-5,0],[5,0]].forEach(([x,z])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.4,3.6,.4),smat(vLayDef[2].col));m.position.set(x,f*3.6+1.8,z);m.castShadow=true;m.userData.ifc='IfcColumn';vLayers.IfcColumn.grp.add(m);});}
+  for(let f=1;f<=fl;f++){[[-5,0,0,10],[-2,4.5,Math.PI/2,10],[2,4.5,Math.PI/2,10]].forEach(([x,z,ry,l])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(l,.35,.3),smat(vLayDef[3].col));m.position.set(x,f*3.6-.2,z);m.rotation.y=ry;m.castShadow=true;m.userData.ifc='IfcBeam';vLayers.IfcBeam.grp.add(m);});}
+  for(let f=0;f<fl;f++){[-4,-1,2].forEach(x=>{const m=new THREE.Mesh(new THREE.BoxGeometry(1.8,1.6,.08),smat(vLayDef[5].col,.4));m.position.set(x,f*3.6+2,-5.05);m.userData.ifc='IfcWindow';vLayers.IfcWindow.grp.add(m);const fr=new THREE.Mesh(new THREE.BoxGeometry(2,1.8,.12),smat(0xd0c8b8));fr.position.copy(m.position);fr.position.z-=.05;vLayers.IfcWindow.grp.add(fr);});}
+  for(let f=0;f<fl;f++){const m=new THREE.Mesh(new THREE.BoxGeometry(1,2.2,.08),smat(vLayDef[4].col));m.position.set(3,f*3.6+1.1,-5.05);m.userData.ifc='IfcDoor';vLayers.IfcDoor.grp.add(m);}
+  const rm=new THREE.Mesh(new THREE.ConeGeometry(9,2.5,4),smat(vLayDef[6].col));rm.position.set(0,fl*3.6+1.25,0);rm.rotation.y=Math.PI/4;rm.castShadow=true;rm.userData.ifc='IfcRoof';vLayers.IfcRoof.grp.add(rm);
+  [[3,1,3,5],[-3,1,3,4.5],[3,1,-2.5,5],[-3,1,-2.5,4.5]].forEach(([x,y,z,s])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(s,3,s*.8),new THREE.MeshStandardMaterial({color:vLayDef[7].col,transparent:true,opacity:.05,roughness:1}));m.position.set(x,y,z);m.userData.ifc='IfcSpace';vLayers.IfcSpace.grp.add(m);});
+}
+function buildLayerUI(){document.getElementById('viewer-layers').innerHTML=vLayDef.map(l=>`<div class="vlayer"><div class="vlayer-name">${l.name}<br><span style="font-size:.36rem;opacity:.5">${l.lbl}</span></div><div class="ltoggle on" id="lt-${l.name}" onclick="toggleLayer('${l.name}',this)"></div></div>`).join('');}
+function toggleLayer(n,btn){const l=vLayers[n];if(!l)return;l.vis=!l.vis;l.grp.visible=l.vis;btn.classList.toggle('on',l.vis);}
+function viewerCmd(cmd){
+  if(!vCam)return;
+  if(cmd==='top'){vCam.position.set(0,35,.01);vCam.lookAt(vTgt);}
+  else if(cmd==='front'){vCam.position.set(0,8,30);vCam.lookAt(vTgt);}
+  else if(cmd==='iso'){vCam.position.set(18,14,20);vCam.lookAt(vTgt);}
+  else if(cmd==='reset'){vCam.position.set(18,14,20);vTgt.set(0,4,0);vCam.lookAt(vTgt);}
+  else if(cmd==='wireframe'){vWireframe=!vWireframe;vScene.traverse(o=>{if(o.isMesh&&o.material)o.material.wireframe=vWireframe;});}
+  else if(cmd==='explode'){vExploded=!vExploded;const d={IfcSlab:[0,1.5,0],IfcWall:[0,.8,1],IfcColumn:[1.2,0,0],IfcBeam:[-1,0,0],IfcWindow:[0,0,2.5],IfcDoor:[0,0,3],IfcRoof:[0,3.5,0],IfcSpace:[.5,0,.5]};const f=vExploded?2.5:0;Object.entries(vLayers).forEach(([n,l])=>{const dd=d[n]||[0,0,0];l.grp.position.set(dd[0]*f,dd[1]*f,dd[2]*f);});}
+}
+function initOrbit(canvas){
+  let drag=false,rDrag=false,lx=0,ly=0;
+  let sph={th:Math.atan2(18,20),phi:Math.atan2(14,Math.hypot(18,20))};let rad=Math.sqrt(18*18+14*14+20*20);
+  function upd(){const x=rad*Math.sin(sph.phi)*Math.sin(sph.th)+vTgt.x,y=rad*Math.cos(sph.phi)+vTgt.y,z=rad*Math.sin(sph.phi)*Math.cos(sph.th)+vTgt.z;vCam.position.set(x,y,z);vCam.lookAt(vTgt);}
+  canvas.addEventListener('mousedown',e=>{drag=true;rDrag=e.button===2;lx=e.clientX;ly=e.clientY;});
+  window.addEventListener('mouseup',()=>drag=false);canvas.addEventListener('contextmenu',e=>e.preventDefault());
+  window.addEventListener('mousemove',e=>{if(!drag)return;const dx=(e.clientX-lx)*.008,dy=(e.clientY-ly)*.008;lx=e.clientX;ly=e.clientY;if(rDrag){const r=new THREE.Vector3();vCam.getWorldDirection(r);r.cross(new THREE.Vector3(0,1,0)).normalize();vTgt.addScaledVector(r,-dx*3);vTgt.y+=dy*3;}else{sph.th-=dx;sph.phi=Math.max(.1,Math.min(Math.PI*.49,sph.phi-dy));}upd();});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();rad=Math.max(3,Math.min(80,rad+e.deltaY*.04));upd();},{passive:false});
+  canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),mx2=((e.clientX-r.left)/canvas.width)*2-1,my2=-((e.clientY-r.top)/canvas.height)*2+1;const ray=new THREE.Raycaster();ray.setFromCamera({x:mx2,y:my2},vCam);const objs=[];vScene.traverse(o=>{if(o.isMesh)objs.push(o);});const hits=ray.intersectObjects(objs);if(hits.length){const o=hits[0].object,ifc=o.userData.ifc||'IfcBuildingElement',pt=hits[0].point;document.getElementById('viewer-info').innerHTML=`${ifc} · Selected<br>Position: (${pt.x.toFixed(2)}, ${pt.y.toFixed(2)}, ${pt.z.toFixed(2)})<br>GlobalId: ${gGuid()}`;o.material.emissive=new THREE.Color(0x2a5aaa);o.material.emissiveIntensity=.3;setTimeout(()=>{try{o.material.emissiveIntensity=0;}catch(e){}},1500);}});
+}
+function drawAxis(){
+  const c=document.getElementById('axis-canvas');c.width=80;c.height=80;const ctx=c.getContext('2d');
+  (function al(){requestAnimationFrame(al);if(!vCam)return;ctx.clearRect(0,0,80,80);
+  [{d:new THREE.Vector3(1,0,0),col:'#b02020',l:'X'},{d:new THREE.Vector3(0,1,0),col:'#207030',l:'Y'},{d:new THREE.Vector3(0,0,1),col:'#1840a0',l:'Z'}].forEach(ax=>{const v=ax.d.clone().applyQuaternion(vCam.quaternion.clone().invert());const ex=40+v.x*27,ey=40-v.y*27;ctx.beginPath();ctx.moveTo(40,40);ctx.lineTo(ex,ey);ctx.strokeStyle=ax.col;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=ax.col;ctx.font='bold 9px Share Tech Mono,monospace';ctx.textAlign='center';ctx.fillText(ax.l,ex+(ex-40)*.28,ey-(ey-40)*.28+3);});})();
+}
+// ════════════════════════════════════
+// IFC UPLOAD — uses web-ifc WASM directly
+// ════════════════════════════════════
+function handleIFCUpload(input){
+  const f = input.files[0]; if(!f) return;
+  const info = document.getElementById('viewer-info');
+  info.innerHTML = 'Loading <strong>'+f.name+'</strong><br>'+(f.size/1024/1024).toFixed(1)+' MB · initialising parser...';
+
+  // Parse IFC text directly — no WASM needed, works everywhere
+  ifcTextFallback(f, info, input);
+}
+
+async function initWebIFC(f, info, input){
+  try {
+    if(!ifcAPI){
+      info.innerHTML = 'Initialising IFC engine...';
+
+      // web-ifc@0.0.36 CJS bundle exposes IfcAPI directly on the module export
+      // Try multiple ways to get the constructor
+      let IfcAPIClass = null;
+      if(window.WebIFC && window.WebIFC.IfcAPI) IfcAPIClass = window.WebIFC.IfcAPI;
+      else if(window.IfcAPI) IfcAPIClass = window.IfcAPI;
+      else if(window.WebIFC && typeof window.WebIFC === 'function') IfcAPIClass = window.WebIFC;
+
+      if(!IfcAPIClass) throw new Error('IfcAPI class not found in loaded module');
+
+      ifcAPI = new IfcAPIClass();
+
+      // Set WASM path — the CJS bundle uses locateFile internally
+      // We override it so it finds our locally hosted wasm
+      ifcAPI.SetWasmPath('/web-ifc/');
+
+      // Also override locateFile directly on the module if available
+      if(window.WebIFC && window.WebIFC.locateFile === undefined){
+        window.WebIFC.locateFile = (path) => '/web-ifc/' + path;
+      }
+
+      await ifcAPI.Init();
+    }
+    info.innerHTML = 'Parser ready · reading geometry...';
+    await loadIFCGeometry(f, info, input);
+  } catch(e) {
+    console.error('web-ifc init failed:', e);
+    info.innerHTML = 'Parse error: '+e.message+'<br>Trying text fallback...';
+    setTimeout(()=>ifcTextFallback(f, info, input), 800);
+  }
+}
+
+async function loadIFCGeometry(f, info, input){
+  try {
+    const buf  = await f.arrayBuffer();
+    const data = new Uint8Array(buf);
+    const modelID = ifcAPI.OpenModel(data, { COORDINATE_TO_ORIGIN: true, USE_FAST_BOOLS: true });
+
+    // Remove previous model mesh
+    if(ifcModelMesh){ vScene.remove(ifcModelMesh); ifcModelMesh=null; }
+    clearViewerModel(); buildLayerUI();
+
+    const root = new THREE.Group();
+    const matCache = {};
+
+    function getMat(r,g,b,a){
+      const key = r+'_'+g+'_'+b+'_'+a;
+      if(matCache[key]) return matCache[key];
+      const m = new THREE.MeshPhongMaterial({
+        color: new THREE.Color(r,g,b),
+        transparent: a<0.98,
+        opacity: a,
+        side: THREE.DoubleSide
+      });
+      matCache[key] = m; return m;
+    }
+
+    // Get all geometry
+    // --- Count elements BEFORE closing model ---
+    const getCnt = (type) => { try{ return ifcAPI.GetLineIDsWithType(modelID,type).size(); }catch(e){return 0;} };
+    const walls   = getCnt(WebIFC.IFCWALL) + getCnt(WebIFC.IFCWALLSTANDARDCASE);
+    const slabs   = getCnt(WebIFC.IFCSLAB);
+    const cols    = getCnt(WebIFC.IFCCOLUMN);
+    const wins    = getCnt(WebIFC.IFCWINDOW);
+    const doors   = getCnt(WebIFC.IFCDOOR);
+    const storeys = getCnt(WebIFC.IFCBUILDINGSTOREY);
+    const beams   = getCnt(WebIFC.IFCBEAM);
+
+    // IFC default colours by type (used when geometry has no colour)
+    const typeColors = {
+      IFCWALL:0xc8b898, IFCWALLSTANDARDCASE:0xc8b898,
+      IFCSLAB:0xa09080, IFCCOLUMN:0x7080a0, IFCBEAM:0x607090,
+      IFCDOOR:0xd4a870, IFCWINDOW:0xaaccee,
+      IFCROOF:0x887060, IFCSPACE:0xd8e8f0,
+      IFCSTAIR:0xb8a888, IFCFURNISHINGELEMENT:0xd0b890,
+      IFCCURTAINWALL:0x88aacc, IFCPLATE:0x9090a0,
+      DEFAULT:0xb8aa96
+    };
+
+    // Build expressID → IFC type map for colouring
+    const typeMap = {};
+    const allTypes = ['IFCWALL','IFCWALLSTANDARDCASE','IFCSLAB','IFCCOLUMN','IFCBEAM',
+      'IFCDOOR','IFCWINDOW','IFCROOF','IFCSPACE','IFCSTAIR','IFCFURNISHINGELEMENT',
+      'IFCCURTAINWALL','IFCPLATE','IFCMEMBER','IFCRAILING'];
+    allTypes.forEach(t => {
+      try{
+        const ids = ifcAPI.GetLineIDsWithType(modelID, WebIFC[t]);
+        for(let x=0;x<ids.size();x++) typeMap[ids.get(x)]=t;
+      }catch(e){}
+    });
+
+    const flatMesh = ifcAPI.LoadAllGeometry(modelID);
+    for(let i=0; i<flatMesh.size(); i++){
+      const fm    = flatMesh.get(i);
+      const geoms = fm.geometries;
+      const ifcType = typeMap[fm.expressID] || 'DEFAULT';
+
+      for(let j=0; j<geoms.size(); j++){
+        const g   = geoms.get(j);
+        const geo = ifcAPI.GetGeometry(modelID, g.geometryExpressID);
+        const vBuf = ifcAPI.GetVertexArray(geo.GetVertexData(), geo.GetVertexDataSize());
+        const iBuf = ifcAPI.GetIndexArray(geo.GetIndexData(), geo.GetIndexDataSize());
+        geo.delete();
+        if(!vBuf || vBuf.length===0) continue;
+
+        // Stride 6: [x,y,z, nx,ny,nz]
+        const nv  = vBuf.length / 6;
+        const pos = new Float32Array(nv*3);
+        const nor = new Float32Array(nv*3);
+        for(let k=0;k<nv;k++){
+          pos[k*3]   = vBuf[k*6];   pos[k*3+1] = vBuf[k*6+1]; pos[k*3+2] = vBuf[k*6+2];
+          nor[k*3]   = vBuf[k*6+3]; nor[k*3+1] = vBuf[k*6+4]; nor[k*3+2] = vBuf[k*6+5];
+        }
+        const bufGeo = new THREE.BufferGeometry();
+        bufGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        bufGeo.setAttribute('normal',   new THREE.BufferAttribute(nor, 3));
+        bufGeo.setIndex(new THREE.BufferAttribute(new Uint32Array(iBuf), 1));
+
+        // Colour: prefer IFC geometry color, fall back to type default
+        let color, opacity=1, transparent=false;
+        try{
+          const c = g.color;
+          if(c && c.w > 0){
+            color = new THREE.Color(c.x, c.y, c.z);
+            opacity = c.w; transparent = c.w < 0.98;
+          } else {
+            color = new THREE.Color(typeColors[ifcType]||typeColors.DEFAULT);
+          }
+        } catch(e){
+          color = new THREE.Color(typeColors[ifcType]||typeColors.DEFAULT);
+        }
+
+        const mat = getMat(color.r, color.g, color.b, opacity);
+        mat.transparent = transparent;
+
+        // Transform — web-ifc gives row-major, THREE expects column-major for fromArray
+        const t16 = g.flatTransformation;
+        const mat4 = new THREE.Matrix4().set(
+          t16[0], t16[1], t16[2], t16[3],
+          t16[4], t16[5], t16[6], t16[7],
+          t16[8], t16[9], t16[10],t16[11],
+          t16[12],t16[13],t16[14],t16[15]
+        );
+        const mesh = new THREE.Mesh(bufGeo, mat);
+        mesh.applyMatrix4(mat4);
+        mesh.userData.expressID = fm.expressID;
+        mesh.userData.ifcType   = ifcType;
+        root.add(mesh);
+      }
+    }
+
+    ifcAPI.CloseModel(modelID);
+
+    // If no real geometry loaded, fall back to schematic
+    if(root.children.length === 0){
+      console.warn('No geometry returned — using text fallback');
+      ifcTextFallback(f, info, input);
+      return;
+    }
+
+    vScene.add(root);
+    ifcModelMesh = root;
+
+    // Auto-frame camera
+    const box  = new THREE.Box3().setFromObject(root);
+    const size = box.getSize(new THREE.Vector3());
+    const cnt  = box.getCenter(new THREE.Vector3());
+    const d    = Math.max(size.x, size.y, size.z) * 1.5;
+    vCam.position.set(cnt.x+d, cnt.y+d*0.7, cnt.z+d);
+    vTgt = cnt.clone(); vCam.lookAt(vTgt);
+    vCam.near = d*0.01; vCam.far = d*10;
+    vCam.updateProjectionMatrix();
+
+    const meshes = root.children.length;
+    info.innerHTML =
+      '<strong>'+f.name.replace(/\.ifc.*/i,'')+'</strong><br>'+
+      'Real IFC geometry · '+meshes+' meshes · IFC4 schema<br>'+
+      'Storeys: '+storeys+' · Walls: '+walls+' · Slabs: '+slabs+'<br>'+
+      'Columns: '+cols+' · Windows: '+wins+' · Doors: '+doors;
+    document.getElementById('vguid').textContent = gGuid();
+    if(input) input.value='';
+
+  } catch(e) {
+    console.error('IFC geometry load failed:', e);
+    info.innerHTML = 'Parse error: '+e.message+'<br>Trying text fallback...';
+    ifcTextFallback(f, info, input);
+  }
+}
+
+function ifcTextFallback(f, info, input){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const txt = e.target.result;
+    const n = t => (txt.match(new RegExp('='+t+'\\(','gi'))||[]).length;
+    const walls  = n('IFCWALL')+n('IFCWALLSTANDARDCASE');
+    const slabs  = n('IFCSLAB'), cols = n('IFCCOLUMN'), beams = n('IFCBEAM');
+    const wins   = n('IFCWINDOW'), doors = n('IFCDOOR');
+    const roofs  = n('IFCROOF'), spaces = n('IFCSPACE');
+    const floors = Math.max(1, Math.min(15, n('IFCBUILDINGSTOREY')||1));
+    const sm = txt.match(/FILE_SCHEMA\s*\(\s*\(\s*'([^']+)'/i);
+    const pm = txt.match(/=IFCPROJECT\([^,]*,[^,]*,'([^']*)'/i);
+    const schema = sm ? sm[1] : 'IFC';
+    const name   = pm&&pm[1] ? pm[1] : f.name.replace(/\.ifc.*/i,'');
+
+    // ── Parse storey elevations ─────────────────────────────
+    const storeyElevs = [];
+    const storeyRe = /IFCBUILDINGSTOREY\s*\([^,]*,[^,]*,[^,]*,[^,]*,[^,]*,\s*([\d\.\-]+)/gi;
+    let sm2;
+    while((sm2=storeyRe.exec(txt))!==null){
+      const elev = parseFloat(sm2[1]);
+      if(!isNaN(elev) && Math.abs(elev)<99999) storeyElevs.push(elev);
+    }
+    storeyElevs.sort((a,b)=>a-b);
+
+    // Normalize — subtract base so ground = 0
+    const baseElev = storeyElevs.length > 0 ? storeyElevs[0] : 0;
+    const localElevs = storeyElevs.map(e => e - baseElev);
+
+    // ── Parse building dimensions from IFCRECTANGLEPROFILEDEF ─
+    // These give real footprint width/depth
+    let bldgW = 0, bldgD = 0;
+    const rectRe = /IFCRECTANGLEPROFILEDEF\s*\([^,]*,[^,]*,[^,]*,\s*([\d\.]+)\s*,\s*([\d\.]+)/gi;
+    const dims = [];
+    let rm2;
+    while((rm2=rectRe.exec(txt))!==null){
+      const a=parseFloat(rm2[1]), b=parseFloat(rm2[2]);
+      if(!isNaN(a)&&!isNaN(b)&&a>0&&b>0&&a<9999&&b<9999) dims.push([a,b]);
+    }
+    if(dims.length>0){
+      // Use median dimensions to avoid outliers from small profiles
+      dims.sort((a,b)=>b[0]-a[0]);
+      const mid = dims[Math.floor(dims.length/4)]; // upper quartile = building envelope
+      bldgW = mid[0]; bldgD = mid[1];
+    }
+
+    // ── Parse extrusion heights for storey height estimation ──
+    const extHeights=[];
+    const extRe=/IFCEXTRUDEDAREASOLID\s*\([^,]*,[^,]*,[^,]*,([\d\.]+)/gi;
+    let em;
+    while((em=extRe.exec(txt))!==null){
+      const h=parseFloat(em[1]);
+      if(!isNaN(h)&&h>1&&h<20) extHeights.push(h);
+    }
+    extHeights.sort((a,b)=>a-b);
+    // Typical storey height = most common extrusion in 2-6m range
+    const typicalH = extHeights.length>0
+      ? extHeights[Math.floor(extHeights.length/2)]
+      : (localElevs.length>1 ? localElevs[1]-localElevs[0] : 3.6);
+
+    // Also try to parse IFCSITE RefElevation or IFCCARTESIANPOINT for origin offset
+    // (just use baseElev as the vertical offset — horizontal is handled by centering)
+
+    const hasCurtain = n('IFCCURTAINWALL') > 0;
+    const hasStair   = n('IFCSTAIR') > 0;
+
+    clearViewerModel();
+    buildRichModel(floors, walls, cols, beams, wins, doors, slabs, roofs, spaces,
+                   localElevs, hasCurtain, hasStair, bldgW, bldgD, typicalH);
+    buildLayerUI();
+
+    // Center the entire model at scene origin (fixes georeferenced IFC)
+    const allGroups = vLayDef.map(l=>vLayers[l.name]&&vLayers[l.name].grp).filter(Boolean);
+    const bbox = new THREE.Box3();
+    allGroups.forEach(g => { if(g.children.length) bbox.expandByObject(g); });
+    if(!bbox.isEmpty()){
+      const center = bbox.getCenter(new THREE.Vector3());
+      const size   = bbox.getSize(new THREE.Vector3());
+      // Shift all groups so bounding box center = 0,0,0
+      allGroups.forEach(g => {
+        g.position.x -= center.x;
+        g.position.z -= center.z;
+        // Keep vertical: shift so bottom = 0
+        g.position.y -= bbox.min.y;
+      });
+      const d = Math.max(size.x, size.y, size.z) * 1.8;
+      vCam.position.set(d, d*0.6, d);
+      vTgt = new THREE.Vector3(0, size.y/2, 0);
+      vCam.lookAt(vTgt);
+      vCam.near = 0.1; vCam.far = d*10;
+      vCam.updateProjectionMatrix();
+    } else {
+      const fH = localElevs.length>1
+        ? (localElevs[localElevs.length-1]-localElevs[0])/Math.max(1,floors-1)
+        : 3.6;
+      const totalH = floors * fH;
+      const d = Math.max(totalH, 20) * 1.4;
+      vCam.position.set(d, d*0.6, d);
+      vTgt = new THREE.Vector3(0, totalH/2, 0);
+      vCam.lookAt(vTgt);
+      vCam.near = 0.1; vCam.far = d*10;
+      vCam.updateProjectionMatrix();
+    }
+
+    info.innerHTML =
+      '<strong>'+name+'</strong> · '+schema+
+      '<br>Storeys: '+floors+' · Walls: '+walls+' · Slabs: '+slabs+
+      '<br>Columns: '+cols+' · Windows: '+wins+' · Doors: '+doors+
+      (roofs?' · Roofs: '+roofs:'')+(spaces?' · Spaces: '+spaces:'')+
+      '<br><em style="font-size:0.9em;opacity:0.55">IFC schema parsed · schematic 3D representation</em>';
+    document.getElementById('vguid').textContent = gGuid();
+    if(input) input.value = '';
+  };
+  reader.readAsText(f);
+}
+
+function clearViewerModel(){
+  // Remove all layer groups from scene and reset
+  vLayDef.forEach(l=>{
+    if(vLayers[l.name]){
+      vScene.remove(vLayers[l.name].grp);
+    }
+  });
+  vLayers={};
+  vWireframe=false;
+  vExploded=false;
+}
+
+function buildParsedModel(floors,walls,cols,beams,wins,doors,slabs,roofs,spaces){
+  buildRichModel(floors,walls,cols,beams,wins,doors,slabs,roofs,spaces,[],false,false);
+}
+
+function buildRichModel(floors,walls,cols,beams,wins,doors,slabs,roofs,spaces,storeyElevs,hasCurtain,hasStair,parsedW,parsedD,parsedH){
+  // Re-init layer groups
+  vLayDef.forEach(l=>{vLayers[l.name]={grp:new THREE.Group(),vis:true};vScene.add(vLayers[l.name].grp);});
+
+  // Storey height: use parsed extrusion height or elevation diff
+  const fH = parsedH && parsedH>1 ? parsedH
+    : storeyElevs.length>1 ? (storeyElevs[storeyElevs.length-1]-storeyElevs[0])/Math.max(1,floors-1)
+    : 3.6;
+
+  // Footprint: use real parsed dimensions if available, else estimate
+  let W, D;
+  if(parsedW && parsedD && parsedW>2 && parsedD>2){
+    // Clamp to reasonable display range but preserve aspect ratio
+    const longest = Math.max(parsedW, parsedD);
+    const displayMax = 40;
+    const ratio = longest > displayMax ? displayMax/longest : 1;
+    W = (parsedW * ratio) / 2;
+    D = (parsedD * ratio) / 2;
+  } else {
+    const density = (walls+cols*2) / Math.max(1,floors);
+    const scale = Math.max(1, Math.min(3, Math.sqrt(density/12)));
+    W = 6*scale; D = 5*scale;
+  }
+  // Ensure minimum visible size
+  W = Math.max(W, 5); D = Math.max(D, 4);
+
+  // ── SLABS ───────────────────────────────────────
+  for(let f=0;f<=floors;f++){
+    const elev = storeyElevs[f] !== undefined ? storeyElevs[f] : f*fH;
+    const m=new THREE.Mesh(new THREE.BoxGeometry(W*2+.1,.22,D*2+.1),smat(vLayDef[1].col));
+    m.position.set(0,elev-.11,0); m.receiveShadow=true; m.userData.ifc='IfcSlab';
+    vLayers.IfcSlab.grp.add(m);
+  }
+
+  // ── WALLS ───────────────────────────────────────
+  for(let f=0;f<floors;f++){
+    const elev = storeyElevs[f] !== undefined ? storeyElevs[f] : f*fH;
+    const nextElev = storeyElevs[f+1] !== undefined ? storeyElevs[f+1] : (f+1)*fH;
+    const h = nextElev - elev - .22;
+    const y = elev + h/2 + .22;
+    const wallT = 0.28;
+    // Perimeter walls
+    [
+      [0,   D,   0,         W*2,  wallT, h],
+      [0,  -D,   0,         W*2,  wallT, h],
+      [W,   0,   Math.PI/2, D*2,  wallT, h],
+      [-W,  0,   Math.PI/2, D*2,  wallT, h],
+    ].forEach(([x,z,ry,l,,hh])=>{
+      const m=new THREE.Mesh(new THREE.BoxGeometry(l,hh,wallT),smat(vLayDef[0].col));
+      m.position.set(x,y,z); m.rotation.y=ry; m.castShadow=true; m.userData.ifc='IfcWall';
+      vLayers.IfcWall.grp.add(m);
+    });
+    // Internal walls proportional to wall count
+    const intWalls = Math.max(0, Math.min(4, Math.floor(walls/floors/6)-1));
+    for(let w=0;w<intWalls;w++){
+      const xOff = (w%2===0?1:-1)*(W*.4);
+      const m=new THREE.Mesh(new THREE.BoxGeometry(wallT,h,D*1.2),smat(0xbfb8a8));
+      m.position.set(xOff,y,0); m.userData.ifc='IfcWall'; vLayers.IfcWall.grp.add(m);
+    }
+  }
+
+  // ── COLUMNS ─────────────────────────────────────
+  const colGrid = cols>0 ? Math.max(2,Math.min(4,Math.round(Math.sqrt(cols/floors)))) : 0;
+  if(colGrid>0){
+    const colPts=[];
+    for(let cx=0;cx<colGrid;cx++) for(let cz=0;cz<2;cz++){
+      colPts.push([-W+W*2*cx/(colGrid-1||1), cz===0?D:-D]);
+    }
+    for(let f=0;f<floors;f++){
+      const elev=storeyElevs[f]!==undefined?storeyElevs[f]:f*fH;
+      const nextElev=storeyElevs[f+1]!==undefined?storeyElevs[f+1]:(f+1)*fH;
+      const h=nextElev-elev-.22;
+      colPts.forEach(([x,z])=>{
+        const m=new THREE.Mesh(new THREE.BoxGeometry(.35,h,.35),smat(vLayDef[2].col));
+        m.position.set(x,elev+h/2+.22,z); m.castShadow=true; m.userData.ifc='IfcColumn';
+        vLayers.IfcColumn.grp.add(m);
+      });
+    }
+  }
+
+  // ── BEAMS ────────────────────────────────────────
+  if(beams>0 || cols>4){
+    for(let f=1;f<=floors;f++){
+      const elev=storeyElevs[f]!==undefined?storeyElevs[f]:f*fH;
+      [
+        [0,   0,   0,        W*2-.3],
+        [0,   D*.5, Math.PI/2, D],
+        [0,  -D*.5, Math.PI/2, D],
+      ].forEach(([x,z,ry,l])=>{
+        const m=new THREE.Mesh(new THREE.BoxGeometry(l,.28,.2),smat(vLayDef[3].col));
+        m.position.set(x,elev-.14,z); m.rotation.y=ry; m.userData.ifc='IfcBeam';
+        vLayers.IfcBeam.grp.add(m);
+      });
+    }
+  }
+
+  // ── WINDOWS ──────────────────────────────────────
+  const wPerFloor = wins>0 ? Math.max(1,Math.min(8,Math.round(wins/floors/2))) : 2;
+  const wSpacing  = (W*2-1.2) / (wPerFloor+1);
+  for(let f=0;f<floors;f++){
+    const elev=storeyElevs[f]!==undefined?storeyElevs[f]:f*fH;
+    const nextElev=storeyElevs[f+1]!==undefined?storeyElevs[f+1]:(f+1)*fH;
+    const midY=elev+(nextElev-elev)*.55;
+    for(let w=0;w<wPerFloor;w++){
+      const wx=-W+.6+wSpacing*(w+1);
+      // Front windows
+      const wm=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.3,.06),smat(vLayDef[5].col,.45));
+      wm.position.set(wx,midY,-D-.04); wm.userData.ifc='IfcWindow';
+      vLayers.IfcWindow.grp.add(wm);
+      // Side windows (if wide model)
+      if(wins>floors*4){
+        const sm=new THREE.Mesh(new THREE.BoxGeometry(.06,1.3,1.1),smat(vLayDef[5].col,.45));
+        sm.position.set(W+.04,midY,wx*.5); sm.userData.ifc='IfcWindow';
+        vLayers.IfcWindow.grp.add(sm);
+      }
+    }
+  }
+
+  // ── DOORS ────────────────────────────────────────
+  const dCount = Math.max(1,Math.min(4,doors||1));
+  const dSpacing = (W*2-2)/(dCount+1);
+  for(let d=0;d<dCount;d++){
+    const dx = -W+1+dSpacing*(d+1);
+    const dm = new THREE.Mesh(new THREE.BoxGeometry(1.1,.1,2.2),smat(vLayDef[4].col));
+    dm.position.set(dx,1.1+.05,-D-.02); dm.userData.ifc='IfcDoor';
+    vLayers.IfcDoor.grp.add(dm);
+  }
+
+  // ── ROOF ─────────────────────────────────────────
+  const topElev = storeyElevs.length>0
+    ? storeyElevs[floors-1] + fH   // top of last storey
+    : floors*fH;
+  const roofElev = storeyElevs[floors]!==undefined ? storeyElevs[floors] : topElev;
+
+  // Detect pitched roof: if roofs>0 or aspect ratio suggests low building
+  const aspectRatio = W/D;
+  const isPitched = roofs>0 || (floors<=2 && W>8);
+
+  // Flat roof slab
+  const rm=new THREE.Mesh(new THREE.BoxGeometry(W*2+.4,.2,D*2+.4),smat(vLayDef[6].col));
+  rm.position.set(0,roofElev+.1,0); rm.userData.ifc='IfcRoof';
+  vLayers.IfcRoof.grp.add(rm);
+
+  if(isPitched){
+    // Pitched roof using triangular prism along the long axis
+    const roofH = Math.max(1.5, Math.min(4, D*.6));
+    const roofLen = W*2+.6;
+    const pts = [
+      new THREE.Vector2(-D-.1, 0),
+      new THREE.Vector2( D+.1, 0),
+      new THREE.Vector2( 0,    roofH),
+    ];
+    const shape = new THREE.Shape(pts);
+    const extSettings = { depth: roofLen, bevelEnabled: false };
+    const roofGeo = new THREE.ExtrudeGeometry(shape, extSettings);
+    const roofMesh = new THREE.Mesh(roofGeo, smat(vLayDef[6].col));
+    roofMesh.rotation.y = Math.PI/2;
+    roofMesh.position.set(roofLen/2, roofElev+.2, -D-.1);
+    roofMesh.userData.ifc='IfcRoof';
+    vLayers.IfcRoof.grp.add(roofMesh);
+  } else {
+    // Flat roof parapet
+    [[0,D+.15,0,W*2+.6],[0,-D-.15,0,W*2+.6],[W+.15,0,Math.PI/2,D*2+.6],[-W-.15,0,Math.PI/2,D*2+.6]].forEach(([x,z,ry,l])=>{
+      const pm=new THREE.Mesh(new THREE.BoxGeometry(l,.45,.15),smat(vLayDef[6].col));
+      pm.position.set(x,roofElev+.32,z); pm.rotation.y=ry; pm.userData.ifc='IfcRoof';
+      vLayers.IfcRoof.grp.add(pm);
+    });
+  }
+
+  // ── SPACES (floor zones) ─────────────────────────
+  if(spaces>0){
+    for(let f=0;f<Math.min(floors,3);f++){
+      const elev=storeyElevs[f]!==undefined?storeyElevs[f]:f*fH;
+      const m=new THREE.Mesh(new THREE.BoxGeometry(W*1.8,.05,D*1.8),smat(vLayDef[7].col,.15));
+      m.position.set(0,elev+.12,0); m.userData.ifc='IfcSpace';
+      vLayers.IfcSpace.grp.add(m);
+    }
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — Mahdi Jafari Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Share+Tech+Mono&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0ece4;--bg2:#e8e4db;--bg3:#e0dcd2;
+  --blue:#0d3d8a;--blue2:#1a5cb8;--blue3:#2a7ae0;
+  --text:#0a1c40;--text2:#2d5a9a;--text3:#4a6a9a;
+  --border:rgba(26,74,138,0.18);--border2:rgba(26,74,138,0.3);
+  --red:#c02020;--green:#207030;
+  --font-mono:'Space Mono',monospace;
+  --font-serif:'Cormorant Garamond',serif;
+  --font-tech:'Share Tech Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);min-height:100vh;font-size:14px;}
+
+/* ── LOGIN ── */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+}
+.login-box{
+  width:360px;border:1px solid var(--border2);padding:2.5rem;
+  background:var(--bg2);position:relative;
+}
+.login-logo{font-family:var(--font-serif);font-size:1.6rem;font-style:italic;color:var(--blue);margin-bottom:0.3rem;}
+.login-sub{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.25em;color:var(--text3);text-transform:uppercase;margin-bottom:2rem;}
+.login-label{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:0.35rem;}
+.login-input{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--border2);
+  color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.5rem 0;
+  outline:none;transition:border-color 0.3s;letter-spacing:0.1em;
+}
+.login-input:focus{border-color:var(--blue);}
+.login-btn{
+  width:100%;margin-top:1.5rem;background:var(--blue);color:var(--bg);
+  border:none;font-family:var(--font-tech);font-size:0.6rem;letter-spacing:0.22em;
+  text-transform:uppercase;padding:0.85rem;cursor:pointer;transition:background 0.3s;
+}
+.login-btn:hover{background:var(--blue2);}
+.login-err{font-family:var(--font-tech);font-size:0.5rem;color:var(--red);letter-spacing:0.1em;margin-top:0.5rem;display:none;}
+.login-corner{position:absolute;font-family:var(--font-tech);font-size:0.4rem;color:var(--border2);letter-spacing:0.1em;}
+.login-corner.tl{top:0.5rem;left:0.7rem;}
+.login-corner.br{bottom:0.5rem;right:0.7rem;}
+
+/* ── MAIN LAYOUT ── */
+#app{display:none;height:100vh;display:none;flex-direction:column;}
+#app.visible{display:flex;}
+
+/* TOP BAR */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.8rem 2rem;border-bottom:1px solid var(--border);
+  background:var(--bg2);flex-shrink:0;
+}
+.topbar-logo{font-family:var(--font-serif);font-style:italic;color:var(--blue);font-size:1rem;}
+.topbar-logo span{font-family:var(--font-tech);font-size:0.48rem;color:var(--text3);display:block;letter-spacing:0.18em;font-style:normal;}
+.topbar-right{display:flex;gap:0.8rem;align-items:center;}
+.tb-btn{
+  font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.4rem 0.9rem;border:1px solid var(--border2);background:transparent;
+  color:var(--text3);cursor:pointer;transition:all 0.2s;
+}
+.tb-btn:hover{color:var(--blue);border-color:var(--blue);}
+.tb-btn.primary{background:var(--blue);color:var(--bg);border-color:var(--blue);}
+.tb-btn.primary:hover{background:var(--blue2);}
+.tb-btn.danger{border-color:rgba(192,32,32,0.3);color:var(--red);}
+.tb-btn.danger:hover{border-color:var(--red);}
+.status-pill{font-family:var(--font-tech);font-size:0.43rem;letter-spacing:0.12em;color:var(--green);display:flex;align-items:center;gap:0.4rem;}
+.status-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* MAIN AREA */
+.main-area{display:grid;grid-template-columns:280px 1fr;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{
+  border-right:1px solid var(--border);background:var(--bg2);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.sidebar-section{padding:1.2rem 1rem;border-bottom:1px solid var(--border);}
+.sidebar-title{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.22em;color:var(--text2);text-transform:uppercase;margin-bottom:0.8rem;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+.stat-box{background:var(--bg3);padding:0.6rem 0.7rem;border:1px solid var(--border);}
+.stat-num{font-family:var(--font-serif);font-size:1.4rem;color:var(--blue);font-weight:300;}
+.stat-lbl{font-family:var(--font-tech);font-size:0.42rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+.nav-item{
+  display:flex;align-items:center;gap:0.6rem;padding:0.55rem 1rem;
+  font-family:var(--font-tech);font-size:0.52rem;letter-spacing:0.1em;
+  color:var(--text3);cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;
+  text-transform:uppercase;
+}
+.nav-item:hover{color:var(--blue);background:rgba(13,61,138,0.04);}
+.nav-item.active{color:var(--blue);border-left-color:var(--blue);background:rgba(13,61,138,0.05);}
+.nav-item .nav-icon{font-size:0.9rem;width:18px;text-align:center;}
+.cat-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.35rem 0;border-bottom:1px solid rgba(26,74,138,0.07);
+}
+.cat-name{font-family:var(--font-tech);font-size:0.48rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.cat-count{font-family:var(--font-tech);font-size:0.42rem;color:var(--blue);background:rgba(13,61,138,0.08);padding:0.1rem 0.4rem;}
+
+/* CONTENT AREA */
+.content{flex:1;overflow-y:auto;padding:2rem;}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* PROJECT LIST */
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.panel-title{font-family:var(--font-serif);font-size:1.8rem;font-style:italic;font-weight:300;color:var(--text);}
+.panel-subtitle{font-family:var(--font-tech);font-size:0.48rem;letter-spacing:0.15em;color:var(--text3);margin-top:0.2rem;text-transform:uppercase;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.filt-btn{font-family:var(--font-tech);font-size:0.47rem;letter-spacing:0.12em;padding:0.28rem 0.7rem;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+.filt-btn.active,.filt-btn:hover{color:var(--blue);border-color:var(--blue);}
+
+/* PROJECT TABLE */
+.proj-table{width:100%;border-collapse:collapse;}
+.proj-table th{font-family:var(--font-tech);font-size:0.47rem;letter-spacing:0.15em;color:var(--text3);text-transform:uppercase;padding:0.5rem 0.8rem;border-bottom:1px solid var(--border);text-align:left;background:var(--bg2);}
+.proj-table td{padding:0.7rem 0.8rem;border-bottom:1px solid rgba(26,74,138,0.07);vertical-align:middle;}
+.proj-row:hover{background:rgba(13,61,138,0.03);}
+.proj-thumb{width:60px;height:45px;object-fit:cover;border:1px solid var(--border);display:block;}
+.proj-thumb-canvas{width:60px;height:45px;border:1px solid var(--border);}
+.proj-title-cell{font-family:var(--font-serif);font-size:0.95rem;color:var(--text);font-weight:300;}
+.proj-cat-badge{font-family:var(--font-tech);font-size:0.4rem;letter-spacing:0.1em;color:var(--blue2);text-transform:uppercase;margin-top:0.15rem;}
+.proj-year{font-family:var(--font-tech);font-size:0.5rem;color:var(--text3);letter-spacing:0.08em;}
+.vis-toggle{
+  width:34px;height:18px;border-radius:9px;border:1px solid var(--border2);
+  background:var(--bg3);cursor:pointer;position:relative;transition:all 0.3s;flex-shrink:0;
+}
+.vis-toggle.on{background:var(--blue);border-color:var(--blue);}
+.vis-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--bg);top:2px;left:2px;transition:transform 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.vis-toggle.on::after{transform:translateX(16px);}
+.action-btns{display:flex;gap:0.4rem;}
+.act-btn{font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.1em;padding:0.25rem 0.6rem;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+.act-btn:hover{color:var(--blue);border-color:var(--blue);}
+.act-btn.del:hover{color:var(--red);border-color:var(--red);}
+.empty-state{text-align:center;padding:4rem 2rem;font-family:var(--font-tech);font-size:0.55rem;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;}
+.empty-state .big{font-family:var(--font-serif);font-size:2rem;font-style:italic;color:var(--border2);display:block;margin-bottom:0.5rem;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.form-grid.full{grid-template-columns:1fr;}
+.form-section{background:var(--bg2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.2rem;}
+.form-section-title{font-family:var(--font-tech);font-size:0.52rem;letter-spacing:0.22em;color:var(--text2);text-transform:uppercase;margin-bottom:1.2rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);}
+.field{margin-bottom:1.1rem;}
+.field label{font-family:var(--font-tech);font-size:0.47rem;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:0.35rem;}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);font-family:var(--font-mono);font-size:0.82rem;
+  padding:0.55rem 0.7rem;outline:none;transition:border-color 0.3s;
+  appearance:none;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue);}
+.field textarea{resize:vertical;min-height:90px;line-height:1.7;}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a6a9a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.7rem center;}
+.field-hint{font-family:var(--font-tech);font-size:0.42rem;color:var(--text3);letter-spacing:0.08em;margin-top:0.3rem;}
+
+/* IMAGE UPLOAD */
+.img-upload-zone{
+  border:1px dashed var(--border2);padding:1.5rem;text-align:center;
+  cursor:pointer;transition:all 0.3s;background:var(--bg);position:relative;
+}
+.img-upload-zone:hover{border-color:var(--blue);background:rgba(13,61,138,0.02);}
+.img-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-upload-zone p{font-family:var(--font-tech);font-size:0.48rem;color:var(--text3);letter-spacing:0.1em;line-height:1.8;pointer-events:none;}
+.img-upload-zone strong{color:var(--blue);}
+.img-upload-zone .icon{font-size:1.5rem;margin-bottom:0.5rem;display:block;opacity:0.4;}
+
+/* HERO PREVIEW */
+#hero-preview-wrap{margin-top:0.8rem;display:none;}
+#hero-preview{width:100%;height:200px;object-fit:cover;border:1px solid var(--border);display:block;}
+.remove-hero{font-family:var(--font-tech);font-size:0.45rem;color:var(--red);letter-spacing:0.1em;cursor:pointer;margin-top:0.35rem;text-transform:uppercase;border:none;background:none;display:block;}
+
+/* GALLERY GRID */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.6rem;margin-top:0.8rem;}
+.gallery-thumb-wrap{position:relative;aspect-ratio:4/3;}
+.gallery-thumb{width:100%;height:100%;object-fit:cover;border:1px solid var(--border);display:block;}
+.gallery-remove{
+  position:absolute;top:3px;right:3px;background:rgba(192,32,32,0.85);
+  color:#fff;border:none;width:18px;height:18px;font-size:10px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;
+}
+.gallery-caption-input{
+  width:100%;margin-top:0.3rem;font-family:var(--font-tech);font-size:0.4rem;
+  padding:0.2rem 0.4rem;border:1px solid var(--border);background:var(--bg);
+  color:var(--text3);outline:none;letter-spacing:0.06em;
+}
+.gallery-caption-input:focus{border-color:var(--blue);}
+.gallery-caption-input::placeholder{color:var(--border2);}
+
+/* IFC SUGGESTION CHIPS */
+.ifc-chips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.5rem;}
+.ifc-chip{
+  font-family:var(--font-tech);font-size:0.4rem;letter-spacing:0.07em;
+  padding:0.18rem 0.5rem;border:1px solid var(--border);color:var(--text3);
+  cursor:pointer;transition:all 0.2s;text-transform:uppercase;
+}
+.ifc-chip:hover,.ifc-chip.selected{color:var(--blue);border-color:var(--blue);background:rgba(13,61,138,0.05);}
+
+/* TAGS INPUT */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;padding:0.4rem 0.5rem;border:1px solid var(--border);background:var(--bg);min-height:2.4rem;}
+.tag-pill{display:flex;align-items:center;gap:0.25rem;font-family:var(--font-tech);font-size:0.42rem;padding:0.18rem 0.5rem;background:rgba(13,61,138,0.08);color:var(--blue);letter-spacing:0.07em;text-transform:uppercase;}
+.tag-pill button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:10px;line-height:1;padding:0;}
+.tags-input{border:none;outline:none;font-family:var(--font-tech);font-size:0.48rem;color:var(--text);background:transparent;min-width:80px;letter-spacing:0.08em;}
+.tags-hint{font-family:var(--font-tech);font-size:0.42rem;color:var(--text3);margin-top:0.3rem;letter-spacing:0.08em;}
+
+/* FORM ACTIONS */
+.form-actions{display:flex;gap:0.8rem;align-items:center;margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border);}
+.btn-save{background:var(--blue);color:var(--bg);border:1px solid var(--blue);font-family:var(--font-tech);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.7rem 2rem;cursor:pointer;transition:all 0.3s;}
+.btn-save:hover{background:var(--blue2);}
+.btn-cancel{background:transparent;color:var(--text3);border:1px solid var(--border);font-family:var(--font-tech);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.7rem 1.5rem;cursor:pointer;transition:all 0.3s;}
+.btn-cancel:hover{border-color:var(--blue);color:var(--blue);}
+.save-msg{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.12em;color:var(--green);opacity:0;transition:opacity 0.4s;text-transform:uppercase;}
+.save-msg.show{opacity:1;}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.setting-box{background:var(--bg2);border:1px solid var(--border);padding:1.4rem;}
+.setting-box-title{font-family:var(--font-tech);font-size:0.5rem;letter-spacing:0.2em;color:var(--text2);text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;
+  font-family:var(--font-tech);font-size:0.52rem;letter-spacing:0.12em;
+  padding:0.7rem 1.2rem;background:var(--blue);color:var(--bg);
+  z-index:9999;opacity:0;transform:translateY(10px);
+  transition:all 0.35s;pointer-events:none;text-transform:uppercase;
+}
+#toast.show{opacity:1;transform:translateY(0);}
+#toast.error{background:var(--red);}
+#toast.success{background:var(--green);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);}
+
+/* DRAG HANDLE */
+.drag-handle{cursor:grab;color:var(--border2);font-size:1rem;padding:0 0.3rem;}
+.drag-handle:active{cursor:grabbing;}
+.proj-row.dragging{opacity:0.4;}
+.proj-row.drag-over{border-top:2px solid var(--blue);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-corner tl">IfcApplication · Admin</div>
+    <div class="login-corner br">mahdijafari.com</div>
+    <div class="login-logo">Mahdi Jafari</div>
+    <div class="login-sub">Portfolio Admin Panel</div>
+    <label class="login-label">Password</label>
+    <input type="password" class="login-input" id="login-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="login-err" id="login-err">Incorrect password. Try again.</div>
+    <button class="login-btn" onclick="doLogin()">Access Admin Panel →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">Mahdi Jafari <span>PORTFOLIO ADMIN · CONTENT MANAGER</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill">Live · <span id="proj-count-top">0</span> Projects</div>
+      <button class="tb-btn" onclick="exportData()">↓ Export JSON</button>
+      <button class="tb-btn" onclick="exportEmbedSnippet()" title="Export ready-to-embed DEFAULT_PROJECTS block for index.html">↓ Export for HTML</button>
+      <button class="tb-btn" onclick="document.getElementById('import-input').click()">↑ Import JSON</button>
+      <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(this)"/>
+      <a href="index.html" target="_blank" class="tb-btn primary">↗ View Live Site</a>
+      <button class="tb-btn danger" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Overview</div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Projects</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-visible">0</div><div class="stat-lbl">Visible</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-cats">0</div><div class="stat-lbl">Categories</div></div>
+          <div class="stat-box"><div class="stat-num" id="stat-imgs">0</div><div class="stat-lbl">Images</div></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Navigation</div>
+        <div class="nav-item active" onclick="showPanel('projects',this)"><span class="nav-icon">▦</span>All Projects</div>
+        <div class="nav-item" onclick="showPanel('add',this)"><span class="nav-icon">+</span>Add Project</div>
+        <div class="nav-item" onclick="showPanel('resources',this)"><span class="nav-icon">⌗</span>Resources</div>
+        <div class="nav-item" onclick="showPanel('categories',this)"><span class="nav-icon">◈</span>Categories</div>
+        <div class="nav-item" onclick="showPanel('settings',this)"><span class="nav-icon">⚙</span>Settings</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Categories</div>
+        <div id="cat-list"></div>
+      </div>
+
+      <div class="sidebar-section" style="margin-top:auto;">
+        <div class="sidebar-title">IFC Schema</div>
+        <div style="font-family:var(--font-tech);font-size:0.41rem;color:var(--text3);line-height:2;letter-spacing:0.06em;">
+          Schema: <span style="color:var(--blue)">IFC4ADD2TC1</span><br>
+          IfcProject: <span style="color:var(--blue)">mahdijafari.com</span><br>
+          Last modified: <span id="last-mod" style="color:var(--blue)">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- PROJECTS PANEL -->
+      <div class="panel active" id="panel-projects">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Projects</div>
+            <div class="panel-subtitle">IfcBuildingElement · Portfolio Collection</div>
+          </div>
+          <button class="tb-btn primary" onclick="showPanel('add',document.querySelectorAll('.nav-item')[1])">+ Add New Project</button>
+        </div>
+        <div class="filter-bar" id="proj-filter"></div>
+        <table class="proj-table">
+          <thead>
+            <tr>
+              <th style="width:30px"></th>
+              <th style="width:70px">Image</th>
+              <th>Project</th>
+              <th style="width:130px">Category</th>
+              <th style="width:60px">Year</th>
+              <th style="width:60px">Visible</th>
+              <th style="width:120px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="proj-tbody"></tbody>
+        </table>
+        <div class="empty-state" id="empty-state" style="display:none;">
+          <span class="big">No projects yet</span>
+          Click "Add New Project" to begin
+        </div>
+      </div>
+
+      <!-- ADD/EDIT PANEL -->
+      <div class="panel" id="panel-add">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title" id="form-panel-title">Add Project</div>
+            <div class="panel-subtitle">IfcBuildingElement · New Instance</div>
+          </div>
+        </div>
+
+        <!-- BASIC INFO -->
+        <div class="form-section">
+          <div class="form-section-title">Basic Information · IfcLabel</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Project Title *</label>
+              <input type="text" id="f-title" placeholder="e.g. Boutique Hotel Interior, Paris"/>
+            </div>
+            <div class="field">
+              <label>Year *</label>
+              <input type="text" id="f-year" placeholder="2024"/>
+            </div>
+            <div class="field">
+              <label>Category *</label>
+              <select id="f-category" onchange="updateIFCsuggestions()">
+                <option value="">Select category...</option>
+                <option value="bim">BIM & IFC</option>
+                <option value="interior">Interior Design</option>
+                <option value="infrastructure">Infrastructure & Urban</option>
+                <option value="residential">Residential Housing</option>
+                <option value="computational">Computational Design</option>
+                <option value="coding">Coding & Robotics</option>
+                <option value="heritage">Conservation & Heritage</option>
+                <option value="retail">Commercial</option>
+                <option value="facade">Façade</option>
+                <option value="photography">Photography</option>
+                <option value="sketch">Sketch</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Location / Client (optional)</label>
+              <input type="text" id="f-location" placeholder="e.g. Paris, France · Private Client"/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Project Description / Short Note *</label>
+            <textarea id="f-desc" placeholder="Write a concise description of the project — what it is, what's interesting about it, key design decisions, scale, year..."></textarea>
+          </div>
+        </div>
+
+        <!-- TAGS -->
+        <div class="form-section">
+          <div class="form-section-title">Tags & Keywords · IfcClassification</div>
+          <div class="field">
+            <label>Tags (press Enter or comma to add)</label>
+            <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tags-input').focus()">
+              <input type="text" class="tags-input" id="tags-input" placeholder="Type a tag..." onkeydown="handleTagInput(event)"/>
+            </div>
+            <div class="tags-hint">e.g. Grasshopper · Parametric · Revit API · IFC4</div>
+          </div>
+          <div class="field" id="ifc-field">
+            <label>IFC Tags · IfcPropertySet (click to select relevant tags)</label>
+            <div class="ifc-chips" id="ifc-chips"></div>
+            <div class="field-hint">Click tags to toggle · Selected tags appear on project cards on hover</div>
+          </div>
+        </div>
+
+        <!-- HERO IMAGE -->
+        <div class="form-section">
+          <div class="form-section-title">Hero Image · IfcImageTexture (main card image)</div>
+          <div class="field">
+            <label>Upload Hero Image</label>
+            <div class="img-upload-zone" onclick="document.getElementById('hero-input').click()">
+              <span class="icon">🖼</span>
+              <p><strong>Click to upload</strong> or drag & drop<br>JPG, PNG, WebP · Recommended: 800×600px · Max 2MB</p>
+              <input type="file" id="hero-input" accept="image/*" onchange="handleHeroUpload(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;"/>
+            </div>
+            <div id="hero-preview-wrap">
+              <img id="hero-preview" src="" alt="Hero preview"/>
+              <button class="remove-hero" onclick="removeHero()">✕ Remove image</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Or paste image URL</label>
+            <input type="text" id="f-hero-url" placeholder="https://your-domain.com/images/interior/project-01.jpg" oninput="handleHeroURL(this)"/>
+            <div class="field-hint">Upload to /public_html/images/[category]/ on Bluehost, then paste the full URL here</div>
+          </div>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="form-section">
+          <div class="form-section-title">Gallery Images · IfcSurfaceTexture (shown in project modal)</div>
+          <div class="field">
+            <label>Upload Gallery Images (select multiple)</label>
+            <div class="img-upload-zone" onclick="document.getElementById('gallery-input').click()">
+              <span class="icon">🗂</span>
+              <p><strong>Click to upload multiple images</strong><br>Hold Ctrl/Cmd to select multiple · JPG, PNG, WebP · Max 2MB each</p>
+              <input type="file" id="gallery-input" accept="image/*" multiple onchange="handleGalleryUpload(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;"/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Or add image URLs one by one</label>
+            <div style="display:flex;gap:0.5rem;">
+              <input type="text" id="f-gallery-url" placeholder="https://..." style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.82rem;padding:0.5rem 0.7rem;outline:none;"/>
+              <button class="tb-btn" onclick="addGalleryURL()">Add URL</button>
+            </div>
+          </div>
+          <div class="gallery-grid" id="gallery-grid"></div>
+          <div class="field-hint" style="margin-top:0.6rem;">Add captions by typing below each thumbnail · These appear in the slideshow</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" onclick="saveProject()">Save Project →</button>
+          <button class="btn-cancel" onclick="showPanel('projects',document.querySelector('.nav-item'))">Cancel</button>
+          <span class="save-msg" id="save-msg">✓ Saved successfully</span>
+        </div>
+      </div>
+
+      <!-- SETTINGS PANEL -->
+      <div class="panel" id="panel-resources">
+        <div class="panel-header">
+          <div><div class="panel-title">Resources</div><div class="panel-subtitle">IfcDocumentReference · Manage links, plugins &amp; tutorials</div></div>
+          <button class="tb-btn primary" onclick="showAddRes()">+ Add Resource</button>
+        </div>
+
+        <!-- Resources list -->
+        <div id="res-table-wrap" style="margin-bottom:2rem;">
+          <table class="proj-table" id="res-table">
+            <thead><tr>
+              <th>Title</th><th>Category</th><th>Type</th><th>URL</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="res-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Add/Edit form (hidden by default) -->
+        <div id="res-form-wrap" style="display:none;">
+          <div class="form-section">
+            <div class="form-section-title" id="res-form-title">Add Resource</div>
+            <input type="hidden" id="res-edit-idx" value="">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div class="form-group"><label class="form-label">Title *</label><input type="text" class="form-input" id="res-f-title" placeholder="Resource title"></div>
+              <div class="form-group"><label class="form-label">Category</label><input type="text" class="form-input" id="res-f-cat" placeholder="BIM Tools, Plugins, Tutorials..."></div>
+              <div class="form-group"><label class="form-label">Type</label>
+                <select class="form-input" id="res-f-type">
+                  <option value="link">Link</option>
+                  <option value="plugin">Plugin</option>
+                  <option value="tutorial">Tutorial</option>
+                  <option value="doc">Documentation</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Badge</label>
+                <select class="form-input" id="res-f-badge">
+                  <option value="link">link</option>
+                  <option value="plugin">plugin</option>
+                  <option value="tutorial">tutorial</option>
+                  <option value="doc">doc</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">URL</label><input type="text" class="form-input" id="res-f-url" placeholder="https://..."></div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="res-f-desc" style="height:80px;resize:vertical;" placeholder="Short description of this resource..."></textarea></div>
+            <div style="display:flex;gap:1rem;margin-top:1rem;">
+              <button class="tb-btn primary" onclick="saveRes()">Save Resource</button>
+              <button class="tb-btn" onclick="cancelRes()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-categories">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Categories</div>
+            <div class="panel-subtitle">IfcClassification · Manage project categories</div>
+          </div>
+        </div>
+        <div style="max-width:560px;">
+          <p style="font-family:var(--font-tech);font-size:0.47rem;color:var(--text3);line-height:1.9;letter-spacing:0.07em;margin-bottom:1.2rem;">
+            Add or remove project categories. The key is used internally (lowercase, no spaces). The label is displayed publicly.
+          </p>
+          <div id="cat-mgr-list" style="margin-bottom:1.4rem;"></div>
+          <div style="display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;">
+            <div>
+              <label style="font-family:var(--font-tech);font-size:0.42rem;letter-spacing:.08em;color:var(--text3);display:block;margin-bottom:.3rem;">KEY (no spaces)</label>
+              <input id="new-cat-key" placeholder="e.g. urban" style="font-family:var(--font-mono);font-size:.72rem;padding:.4rem .7rem;background:var(--card-bg);border:1px solid var(--border);color:var(--text1);border-radius:4px;width:130px;">
+            </div>
+            <div>
+              <label style="font-family:var(--font-tech);font-size:0.42rem;letter-spacing:.08em;color:var(--text3);display:block;margin-bottom:.3rem;">LABEL (displayed)</label>
+              <input id="new-cat-label" placeholder="e.g. Urban Design" style="font-family:var(--font-mono);font-size:.72rem;padding:.4rem .7rem;background:var(--card-bg);border:1px solid var(--border);color:var(--text1);border-radius:4px;width:160px;">
+            </div>
+            <button onclick="addCategory()" style="font-family:var(--font-tech);font-size:.42rem;letter-spacing:.08em;padding:.45rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:4px;cursor:pointer;">+ ADD</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-settings">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Settings</div>
+            <div class="panel-subtitle">IfcApplication · Configuration</div>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="setting-box">
+            <div class="setting-box-title">Change Admin Password</div>
+            <div class="field"><label>Current Password</label><input type="password" id="s-cur-pw" class=""/></div>
+            <div class="field"><label>New Password</label><input type="password" id="s-new-pw"/></div>
+            <div class="field"><label>Confirm New Password</label><input type="password" id="s-conf-pw"/></div>
+            <button class="btn-save" onclick="changePassword()" style="margin-top:0.5rem;">Update Password</button>
+          </div>
+          <div class="setting-box">
+            <div class="setting-box-title">Site Information</div>
+            <div class="field"><label>Site Title</label><input type="text" id="s-title" value="Mahdi Jafari"/></div>
+            <div class="field"><label>Tagline</label><input type="text" id="s-tagline" value="Architect · BIM Developer · Computational Design"/></div>
+            <div class="field"><label>Email</label><input type="text" id="s-email" value="info@mahdijafari.com"/></div>
+            <div class="field"><label>LinkedIn URL</label><input type="text" id="s-linkedin" value="https://linkedin.com/in/mahdijafari"/></div>
+            <button class="btn-save" onclick="saveSiteSettings()">Save Settings</button>
+          </div>
+          <div class="setting-box">
+            <div class="setting-box-title">Data Management</div>
+            <p style="font-family:var(--font-tech);font-size:0.47rem;color:var(--text3);line-height:1.9;letter-spacing:0.07em;margin-bottom:1rem;">Export your project data as a JSON backup. Import to restore. Data is stored in your browser's localStorage.</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <button class="tb-btn" onclick="exportData()" style="width:100%;text-align:center;">↓ Export All Data (JSON)</button>
+              <button class="tb-btn" onclick="document.getElementById('import-input').click()" style="width:100%;text-align:center;">↑ Import Data (JSON)</button>
+              <button class="tb-btn danger" onclick="clearAllData()" style="width:100%;text-align:center;">✕ Clear All Projects</button>
+            </div>
+          </div>
+          <div class="setting-box">
+            <div class="setting-box-title">Image Upload Guide</div>
+            <div style="font-family:var(--font-tech);font-size:0.43rem;color:var(--text3);line-height:2.1;letter-spacing:0.06em;">
+              <strong style="color:var(--blue)">Bluehost Path:</strong><br>
+              /public_html/images/[category]/<br><br>
+              <strong style="color:var(--blue)">URL Format:</strong><br>
+              mahdijafari.com/images/interior/project-01.jpg<br><br>
+              <strong style="color:var(--blue)">Recommended Sizes:</strong><br>
+              Card: 800×600px · &lt;150KB<br>
+              Gallery: 1400×900px · &lt;300KB<br><br>
+              <strong style="color:var(--blue)">Tool:</strong> squoosh.app (free compressor)
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════
+// CONSTANTS & STATE
+// ════════════════════════════════════
+const STORAGE_KEY = 'mj_projects';
+const SETTINGS_KEY = 'mj_settings';
+const AUTH_KEY = 'mj_admin_auth';
+const DEFAULT_PW = 'mahdi2024';
+
+const IFC_BY_CATEGORY = {
+  bim: ['IfcBuilding','IfcBuildingStorey','IfcSpace','IfcZone','IfcWall','IfcSlab','IfcDoor','IfcWindow','IfcSystem','IfcPropertySet','IfcRelDefinesByProperties'],
+  interior: ['IfcSpace','IfcRoom','IfcFurnishingElement','IfcLightFixture','IfcCovering','IfcFloor','IfcCeiling','IfcAnnotation','IfcFurniture'],
+  infrastructure: ['IfcAlignment','IfcRoad','IfcBridge','IfcCivilElement','IfcGeographicElement','IfcSite','IfcGrid'],
+  residential: ['IfcBuilding','IfcBuildingStorey','IfcSpace','IfcWall','IfcSlab','IfcDoor','IfcWindow','IfcStair','IfcRoof'],
+  computational: ['IfcCurtainWall','IfcMember','IfcPlate','IfcBuildingElementProxy','IfcPropertySet','IfcRelDefinesByProperties'],
+  coding: ['IfcApplication','IfcExternalReference','IfcPropertySet','IfcClassification','IfcBuildingElementProxy','IfcRelAggregates'],
+  heritage: [],
+  retail: ['IfcSpace','IfcFurniture','IfcCovering','IfcLightFixture','IfcOpeningElement','IfcDoor'],
+  facade: ['IfcCurtainWall','IfcPlate','IfcMember','IfcWindow','IfcFastener','IfcDiscreteAccessory'],
+  photography: [],
+  sketch: [],
+};
+
+const CAT_LABELS = {
+  bim:'BIM & IFC', interior:'Interior Design', infrastructure:'Infrastructure & Urban',
+  residential:'Residential Housing', computational:'Computational Design', coding:'Coding & Robotics',
+  heritage:'Conservation & Heritage', retail:'Commercial', facade:'Façade',
+  photography:'Photography', sketch:'Sketch'
+};
+
+let projects = [];
+let editingId = null;
+let currentTags = [];
+let heroData = null; // base64 or URL
+let galleryData = []; // [{src, caption}]
+let selectedIFC = [];
+let dragSrc = null;
+
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+function getPassword(){return localStorage.getItem('mj_admin_pw')||DEFAULT_PW;}
+function doLogin(){
+  const pw = document.getElementById('login-pw').value;
+  if(pw === getPassword()){
+    localStorage.setItem(AUTH_KEY,'1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    init();
+  } else {
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('login-pw').value='';
+  }
+}
+function doLogout(){
+  localStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+function changePassword(){
+  const cur=document.getElementById('s-cur-pw').value;
+  const nw=document.getElementById('s-new-pw').value;
+  const conf=document.getElementById('s-conf-pw').value;
+  if(cur!==getPassword()){showToast('Current password incorrect','error');return;}
+  if(nw.length<6){showToast('Password must be at least 6 characters','error');return;}
+  if(nw!==conf){showToast('Passwords do not match','error');return;}
+  localStorage.setItem('mj_admin_pw',nw);
+  showToast('Password updated successfully','success');
+  ['s-cur-pw','s-new-pw','s-conf-pw'].forEach(id=>document.getElementById(id).value='');
+}
+
+// Check if already logged in
+if(localStorage.getItem(AUTH_KEY)==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  init();
+}
+document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
+function init(){
+  loadCategories();
+  loadProjects();
+  renderProjectList();
+  updateStats();
+  renderCatList();
+  renderFilterBar();
+  loadSettings();
+  document.getElementById('last-mod').textContent=new Date().toLocaleDateString('en-GB');
+}
+
+// ════════════════════════════════════
+// CATEGORIES
+// ════════════════════════════════════
+const CAT_KEY = 'mj_categories';
+
+function loadCategories(){
+  const raw = localStorage.getItem(CAT_KEY);
+  if(raw){
+    const saved = JSON.parse(raw);
+    // Merge saved into CAT_LABELS
+    Object.assign(CAT_LABELS, saved);
+  }
+}
+
+function saveCategories(){
+  localStorage.setItem(CAT_KEY, JSON.stringify(CAT_LABELS));
+}
+
+function renderCatManager(){
+  const el = document.getElementById('cat-mgr-list');
+  if(!el) return;
+  const counts = {};
+  projects.forEach(p=>{ counts[p.category]=(counts[p.category]||0)+1; });
+  el.innerHTML = Object.entries(CAT_LABELS).map(([key,label])=>{
+    const used = counts[key]||0;
+    return `<div style="display:flex;align-items:center;gap:.7rem;padding:.5rem .7rem;border:1px solid var(--border);border-radius:4px;margin-bottom:.4rem;background:var(--card-bg);">
+      <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--blue2);min-width:100px;">${key}</span>
+      <span style="font-family:var(--font-tech);font-size:.5rem;letter-spacing:.07em;flex:1;">${label}</span>
+      <span style="font-family:var(--font-tech);font-size:.4rem;color:var(--text3);">${used} project${used!==1?'s':''}</span>
+      ${used===0?`<button onclick="deleteCategory('${key}')" style="font-family:var(--font-tech);font-size:.38rem;padding:.25rem .55rem;background:rgba(180,40,40,.08);color:#a33;border:1px solid rgba(180,40,40,.2);border-radius:3px;cursor:pointer;">REMOVE</button>`:'<span style="font-size:.4rem;color:var(--text3);font-family:var(--font-tech);letter-spacing:.06em;">IN USE</span>'}
+    </div>`;
+  }).join('');
+  // Also rebuild the category dropdown in Add Project form
+  const sel = document.getElementById('f-category');
+  if(sel){
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Select category...</option>' +
+      Object.entries(CAT_LABELS).map(([k,l])=>`<option value="${k}"${k===cur?' selected':''}>${l}</option>`).join('');
+  }
+}
+
+function addCategory(){
+  const key = document.getElementById('new-cat-key').value.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const label = document.getElementById('new-cat-label').value.trim();
+  if(!key||!label){showToast('Enter both key and label','error');return;}
+  if(CAT_LABELS[key]){showToast('Key already exists','error');return;}
+  CAT_LABELS[key] = label;
+  saveCategories();
+  renderCatManager();
+  renderCatList();
+  document.getElementById('new-cat-key').value='';
+  document.getElementById('new-cat-label').value='';
+  showToast('Category added: '+label,'success');
+}
+
+function deleteCategory(key){
+  const used = projects.filter(p=>p.category===key).length;
+  if(used>0){showToast('Cannot delete — category has '+used+' project(s)','error');return;}
+  delete CAT_LABELS[key];
+  saveCategories();
+  renderCatManager();
+  renderCatList();
+  showToast('Category removed','success');
+}
+
+// DATA
+// ════════════════════════════════════
+function loadProjects(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  projects=raw?JSON.parse(raw):[];
+  // Normalize all IDs to numbers to avoid querySelector issues
+  projects.forEach((p,i)=>{
+    if(typeof p.id !== 'number') p.id = Date.now() + i;
+  });
+}
+function saveProjects(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(projects));
+  } catch(e){
+    if(e.name==='QuotaExceededError'||e.code===22){
+      showToast('Storage full! Use "Export JSON" to back up, then clear old data.','error');
+      return;
+    }
+    throw e;
+  }
+  updateStats();
+  renderCatList();
+  renderFilterBar();
+  document.getElementById('proj-count-top').textContent=projects.filter(p=>p.visible!==false).length;
+  document.getElementById('last-mod').textContent=new Date().toLocaleDateString('en-GB');
+  // Show publish reminder
+  showPublishBanner();
+}
+
+let publishBannerTimeout;
+function showPublishBanner(){
+  let banner = document.getElementById('publish-banner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'publish-banner';
+    banner.style.cssText = 'position:fixed;bottom:3rem;left:50%;transform:translateX(-50%);z-index:999;background:#0d3d8a;color:#fff;font-family:var(--font-tech);font-size:0.46rem;letter-spacing:0.1em;padding:0.7rem 1.4rem;border-radius:4px;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+    banner.innerHTML = '<span>⚠ Changes saved locally — click Publish to make them live on all devices</span><button onclick="publishProjectsJSON()" style="background:#fff;color:#0d3d8a;border:none;padding:0.35rem 0.8rem;font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.08em;cursor:pointer;border-radius:3px;font-weight:bold;">PUBLISH →</button><button onclick="document.getElementById('publish-banner').remove()" style="background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:0.9rem;">✕</button>';
+    document.body.appendChild(banner);
+  }
+  clearTimeout(publishBannerTimeout);
+}
+
+function publishProjectsJSON(){
+  // Downloads projects.json — user uploads this to their GitHub repo/Bluehost
+  const data = {
+    version: 1,
+    updated: new Date().toISOString().slice(0,10),
+    projects: projects
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'projects.json';
+  a.click();
+  document.getElementById('publish-banner')?.remove();
+  showToast('projects.json downloaded! Upload it to your website root folder to go live.','success');
+}
+function loadSettings(){
+  const raw=localStorage.getItem(SETTINGS_KEY);
+  if(!raw)return;
+  const s=JSON.parse(raw);
+  if(s.title)document.getElementById('s-title').value=s.title;
+  if(s.tagline)document.getElementById('s-tagline').value=s.tagline;
+  if(s.email)document.getElementById('s-email').value=s.email;
+  if(s.linkedin)document.getElementById('s-linkedin').value=s.linkedin;
+}
+function saveSiteSettings(){
+  const s={
+    title:document.getElementById('s-title').value,
+    tagline:document.getElementById('s-tagline').value,
+    email:document.getElementById('s-email').value,
+    linkedin:document.getElementById('s-linkedin').value,
+  };
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));
+  showToast('Settings saved','success');
+}
+
+// ════════════════════════════════════
+// STATS & SIDEBAR
+// ════════════════════════════════════
+function updateStats(){
+  const vis=projects.filter(p=>p.visible!==false).length;
+  const imgs=projects.filter(p=>p.hero).length;
+  const cats=new Set(projects.map(p=>p.category)).size;
+  document.getElementById('stat-total').textContent=projects.length;
+  document.getElementById('stat-visible').textContent=vis;
+  document.getElementById('stat-cats').textContent=cats;
+  document.getElementById('stat-imgs').textContent=imgs;
+  document.getElementById('proj-count-top').textContent=vis;
+}
+function renderCatList(){
+  const counts={};
+  projects.forEach(p=>{counts[p.category]=(counts[p.category]||0)+1;});
+  const el=document.getElementById('cat-list');
+  el.innerHTML=Object.entries(counts).map(([cat,n])=>`
+    <div class="cat-chip">
+      <div class="cat-name">${CAT_LABELS[cat]||cat}</div>
+      <div class="cat-count">${n}</div>
+    </div>`).join('');
+}
+function renderFilterBar(){
+  const cats=['all',...new Set(projects.map(p=>p.category))];
+  document.getElementById('proj-filter').innerHTML=cats.map(c=>`
+    <button class="filt-btn ${c==='all'?'active':''}" onclick="filterProjects(this,'${c}')">
+      ${c==='all'?'All':CAT_LABELS[c]||c}
+    </button>`).join('');
+}
+
+// ════════════════════════════════════
+// PROJECT LIST
+// ════════════════════════════════════
+let currentFilter='all';
+function filterProjects(btn,cat){
+  document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=cat;
+  renderProjectList();
+}
+function renderProjectList(){
+  const tbody=document.getElementById('proj-tbody');
+  const filtered=currentFilter==='all'?projects:projects.filter(p=>p.category===currentFilter);
+  document.getElementById('empty-state').style.display=filtered.length?'none':'block';
+  tbody.innerHTML=filtered.map((p,i)=>`
+    <tr class="proj-row" draggable="true" data-id="${p.id}"
+        ondragstart="dragStart(event,${p.id})" ondragover="dragOver(event)" ondrop="dragDrop(event,${p.id})" ondragleave="dragLeave(event)">
+      <td><span class="drag-handle" title="Drag to reorder">⠿</span></td>
+      <td>${p.hero
+        ?`<img class="proj-thumb" src="${p.hero}" alt="${p.title}" onerror="this.style.display='none'">`
+        :`<canvas class="proj-thumb-canvas" id="mini-${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'_')}"></canvas>`}</td>
+      <td>
+        <div class="proj-title-cell">${p.title}</div>
+        <div class="proj-cat-badge">${CAT_LABELS[p.category]||p.category}</div>
+        ${p.location?`<div style="font-family:var(--font-tech);font-size:0.4rem;color:var(--text3);margin-top:0.1rem;">${p.location}</div>`:''}
+      </td>
+      <td><span style="font-family:var(--font-tech);font-size:0.48rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;">${CAT_LABELS[p.category]||p.category}</span></td>
+      <td class="proj-year">${p.year||'—'}</td>
+      <td><div class="vis-toggle ${p.visible!==false?'on':''}" onclick="toggleVisible(${p.id})" title="Toggle visibility"></div></td>
+      <td>
+        <div class="action-btns">
+          <button class="act-btn" onclick="editProject(${p.id})">Edit</button>
+          <button class="act-btn del" onclick="deleteProject(${p.id})">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  // Draw mini canvases for projects without images
+  filtered.filter(p=>!p.hero).forEach(p=>{
+    requestAnimationFrame(()=>drawMiniCanvas(p));
+  });
+}
+
+function drawMiniCanvas(p){
+  const c=document.getElementById('mini-'+String(p.id).replace(/[^a-zA-Z0-9_-]/g,'_'));
+  if(!c)return;
+  c.width=60;c.height=45;
+  const ctx=c.getContext('2d');
+  const pal=p.palette||['#9ab0c8','#7090a8','#5070a0','#304888'];
+  const g=ctx.createLinearGradient(0,0,60,45);
+  pal.forEach((col,i)=>g.addColorStop(i/(pal.length-1),col));
+  ctx.fillStyle=g;ctx.fillRect(0,0,60,45);
+  ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=0.5;
+  ctx.strokeRect(4,4,52,37);
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(60,45);ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='5px Share Tech Mono,monospace';
+  ctx.textAlign='center';ctx.fillText(p.category.toUpperCase().slice(0,6),30,25);
+}
+
+// ════════════════════════════════════
+// TOGGLE VISIBLE
+// ════════════════════════════════════
+function toggleVisible(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  p.visible=p.visible===false?true:false;
+  saveProjects();renderProjectList();
+  showToast(p.visible?'Project visible on site':'Project hidden from site');
+}
+
+// ════════════════════════════════════
+// DELETE
+// ════════════════════════════════════
+function deleteProject(id){
+  if(!confirm('Delete this project? This cannot be undone.'))return;
+  projects=projects.filter(p=>p.id!==id);
+  saveProjects();renderProjectList();
+  showToast('Project deleted','error');
+}
+
+// ════════════════════════════════════
+// DRAG REORDER
+// ════════════════════════════════════
+function dragStart(e,id){dragSrc=id;e.currentTarget.classList.add('dragging');}
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function dragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function dragDrop(e,targetId){
+  e.currentTarget.classList.remove('drag-over');
+  document.querySelectorAll('.proj-row').forEach(r=>r.classList.remove('dragging','drag-over'));
+  if(dragSrc===targetId)return;
+  const si=projects.findIndex(p=>p.id===dragSrc);
+  const ti=projects.findIndex(p=>p.id===targetId);
+  const [moved]=projects.splice(si,1);
+  projects.splice(ti,0,moved);
+  saveProjects();renderProjectList();
+  showToast('Order updated');
+}
+
+// ════════════════════════════════════
+// PANEL NAVIGATION
+// ════════════════════════════════════
+function showPanel(name,navEl){
+  if(name==='resources') setTimeout(renderResTable,50);
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  if(name==='add'&&!editingId)resetForm();
+  if(name==='projects')renderProjectList();
+}
+
+// ════════════════════════════════════
+// FORM
+// ════════════════════════════════════
+function resetForm(){
+  editingId=null;
+  heroData=null;galleryData=[];currentTags=[];selectedIFC=[];
+  ['f-title','f-year','f-location','f-desc','f-hero-url','f-gallery-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-category').value='';
+  document.getElementById('tags-wrap').innerHTML='<input type="text" class="tags-input" id="tags-input" placeholder="Type a tag..." onkeydown="handleTagInput(event)"/>';
+  document.getElementById('ifc-chips').innerHTML='';
+  document.getElementById('gallery-grid').innerHTML='';
+  document.getElementById('hero-preview-wrap').style.display='none';
+  document.getElementById('hero-preview').src='';
+  document.getElementById('form-panel-title').textContent='Add Project';
+}
+
+function editProject(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  editingId=id;
+  heroData=p.hero||null;
+  galleryData=p.gallery?[...p.gallery]:[];
+  currentTags=p.tags?[...p.tags]:[];
+  selectedIFC=p.ifc?p.ifc.split(' · '):[]; // store as array
+  document.getElementById('f-title').value=p.title||'';
+  document.getElementById('f-year').value=p.year||'';
+  document.getElementById('f-location').value=p.location||'';
+  document.getElementById('f-desc').value=p.desc||'';
+  document.getElementById('f-category').value=p.category||'';
+  document.getElementById('f-hero-url').value=(p.hero&&!p.hero.startsWith('data:'))?p.hero:'';
+  document.getElementById('form-panel-title').textContent='Edit Project';
+  // Hero preview
+  if(p.hero){document.getElementById('hero-preview').src=p.hero;document.getElementById('hero-preview-wrap').style.display='block';}
+  else{document.getElementById('hero-preview-wrap').style.display='none';}
+  // Tags
+  renderTags();
+  // IFC
+  updateIFCsuggestions();
+  // Gallery
+  renderGallery();
+  showPanel('add',document.querySelectorAll('.nav-item')[1]);
+}
+
+function saveProject(){
+  const title=document.getElementById('f-title').value.trim();
+  const year=document.getElementById('f-year').value.trim();
+  const category=document.getElementById('f-category').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!title){showToast('Please enter a project title','error');return;}
+  if(!category){showToast('Please select a category','error');return;}
+
+  const ifcStr=selectedIFC.length?selectedIFC.join(' · '):null;
+  const proj={
+    id:editingId||Date.now(),
+    title,year,category,desc,
+    cat_label:CAT_LABELS[category]||category,
+    location:document.getElementById('f-location').value.trim(),
+    hero:heroData||null,
+    gallery:galleryData.length?galleryData:null,
+    tags:currentTags,
+    ifc:(['heritage','sketch','photography'].includes(category))?null:ifcStr,
+    visible:true,
+    palette:null, // will use category default in main site
+  };
+
+  if(editingId){
+    const i=projects.findIndex(p=>p.id===editingId);
+    if(i>=0){const old=projects[i];proj.visible=old.visible;projects[i]=proj;}
+  } else {
+    projects.unshift(proj);
+  }
+  saveProjects();
+
+  const msg=document.getElementById('save-msg');
+  msg.classList.add('show');
+  setTimeout(()=>msg.classList.remove('show'),2500);
+  showToast(editingId?'Project updated':'Project added','success');
+  editingId=null;
+  setTimeout(()=>showPanel('projects',document.querySelectorAll('.nav-item')[0]),600);
+}
+
+// ════════════════════════════════════
+// TAGS
+// ════════════════════════════════════
+function handleTagInput(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const val=e.target.value.replace(',','').trim();
+    if(val&&!currentTags.includes(val)){currentTags.push(val);renderTags();}
+    e.target.value='';
+  }
+  if(e.key==='Backspace'&&e.target.value===''&&currentTags.length){
+    currentTags.pop();renderTags();
+  }
+}
+function renderTags(){
+  const wrap=document.getElementById('tags-wrap');
+  wrap.innerHTML=currentTags.map((t,i)=>`
+    <span class="tag-pill">${t}<button onclick="removeTag(${i})">✕</button></span>`).join('')+
+    `<input type="text" class="tags-input" id="tags-input" placeholder="" onkeydown="handleTagInput(event)"/>`;
+}
+function removeTag(i){currentTags.splice(i,1);renderTags();}
+
+// ════════════════════════════════════
+// IFC SUGGESTIONS
+// ════════════════════════════════════
+function updateIFCsuggestions(){
+  const cat=document.getElementById('f-category').value;
+  const chips=IFC_BY_CATEGORY[cat]||[];
+  document.getElementById('ifc-chips').innerHTML=chips.map(c=>`
+    <span class="ifc-chip ${selectedIFC.includes(c)?'selected':''}" onclick="toggleIFC(this,'${c}')">${c}</span>`).join('');
+}
+function toggleIFC(el,tag){
+  el.classList.toggle('selected');
+  if(selectedIFC.includes(tag))selectedIFC=selectedIFC.filter(t=>t!==tag);
+  else selectedIFC.push(tag);
+}
+
+// ════════════════════════════════════
+// IMAGES
+// ════════════════════════════════════
+function handleHeroUpload(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>2.5*1024*1024){showToast('Image too large (max 2MB). Use squoosh.app to compress.','error');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=900;
+      const ratio=Math.min(1,MAX/Math.max(img.width,img.height));
+      const cvs=document.createElement('canvas');
+      cvs.width=Math.round(img.width*ratio);
+      cvs.height=Math.round(img.height*ratio);
+      cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height);
+      heroData=cvs.toDataURL('image/jpeg',0.78);
+      document.getElementById('hero-preview').src=heroData;
+      document.getElementById('hero-preview-wrap').style.display='block';
+      document.getElementById('f-hero-url').value='';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function handleHeroURL(input){
+  const url=input.value.trim();
+  if(url){heroData=url;document.getElementById('hero-preview').src=url;document.getElementById('hero-preview-wrap').style.display='block';}
+  else{heroData=null;document.getElementById('hero-preview-wrap').style.display='none';}
+}
+function removeHero(){
+  heroData=null;
+  document.getElementById('hero-preview-wrap').style.display='none';
+  document.getElementById('hero-preview').src='';
+  document.getElementById('f-hero-url').value='';
+  document.getElementById('hero-input').value='';
+}
+function handleGalleryUpload(input){
+  const files=Array.from(input.files);
+  let loaded=0;
+  files.forEach(file=>{
+    if(file.size>2.5*1024*1024){showToast(`${file.name} too large, skipped`,'error');loaded++;if(loaded===files.length)renderGallery();return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img2=new Image();
+      img2.onload=()=>{
+        const MAX2=900;
+        const ratio2=Math.min(1,MAX2/Math.max(img2.width,img2.height));
+        const cvs2=document.createElement('canvas');
+        cvs2.width=Math.round(img2.width*ratio2);
+        cvs2.height=Math.round(img2.height*ratio2);
+        cvs2.getContext('2d').drawImage(img2,0,0,cvs2.width,cvs2.height);
+        galleryData.push({src:cvs2.toDataURL('image/jpeg',0.75),caption:''});
+        loaded++;if(loaded===files.length)renderGallery();
+      };
+      img2.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function addGalleryURL(){
+  const url=document.getElementById('f-gallery-url').value.trim();
+  if(!url)return;
+  galleryData.push({src:url,caption:''});
+  document.getElementById('f-gallery-url').value='';
+  renderGallery();
+}
+function renderGallery(){
+  document.getElementById('gallery-grid').innerHTML=galleryData.map((img,i)=>`
+    <div>
+      <div class="gallery-thumb-wrap">
+        <img class="gallery-thumb" src="${img.src}" alt="Gallery ${i+1}" onerror="this.style.opacity=0.3"/>
+        <button class="gallery-remove" onclick="removeGallery(${i})">✕</button>
+      </div>
+      <input class="gallery-caption-input" type="text" placeholder="Caption..." value="${img.caption||''}" oninput="galleryData[${i}].caption=this.value"/>
+    </div>`).join('');
+}
+function removeGallery(i){galleryData.splice(i,1);renderGallery();}
+
+// ════════════════════════════════════
+// EXPORT / IMPORT
+// ════════════════════════════════════
+function exportData(){
+  const data={projects,settings:JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'),exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`mahdijafari-portfolio-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  showToast('Data exported','success');
+}
+
+function exportEmbedSnippet(){
+  // Generates the DEFAULT_PROJECTS block ready to paste into index.html
+  // Strip base64 hero/gallery images above 50KB to keep file size manageable
+  const clean = projects.map(p => {
+    const pc = {...p};
+    // Keep base64 images as-is (already compressed by admin)
+    return pc;
+  });
+  const snippet = `const DEFAULT_PROJECTS = ${JSON.stringify(clean, null, 2)};`;
+  const blob = new Blob([snippet], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `DEFAULT_PROJECTS-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  showToast('HTML embed snippet exported! Paste into index.html between DEFAULT_PROJECTS = [ and ];','success');
+}
+function importData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.projects){
+        if(!confirm(`Import ${data.projects.length} projects? This will replace your current data.`))return;
+        projects=data.projects;
+        saveProjects();
+        if(data.settings)localStorage.setItem(SETTINGS_KEY,JSON.stringify(data.settings));
+        renderProjectList();loadSettings();
+        showToast(`Imported ${projects.length} projects`,'success');
+      }
+    }catch(err){showToast('Invalid JSON file','error');}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+function clearAllData(){
+  if(!confirm('Delete ALL projects? This cannot be undone.'))return;
+  if(!confirm('Are you absolutely sure? All project data will be lost.'))return;
+  projects=[];saveProjects();renderProjectList();showToast('All data cleared','error');
+}
+
+// ════════════════════════════════════
+// TOAST
+// ════════════════════════════════════
+let toastTimer;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show'+(type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',2800);
+}
+
+// ════════════════════════════════════
+// RESOURCES ADMIN
+// ════════════════════════════════════
+const RES_KEY = 'mj_resources';
+const DEFAULT_RESOURCES = [
+  {id:1,title:'BIMcollab Zoom — Quick Start',cat:'BIM Tools',type:'link',badge:'link',url:'https://help.bimcollab.com',desc:'Official documentation for BIMcollab Zoom workspace and issue management.'},
+  {id:2,title:'ACC (Autodesk Construction Cloud)',cat:'BIM Tools',type:'link',badge:'link',url:'https://knowledge.autodesk.com/support/autodesk-docs',desc:'Full documentation for ACC platform, project setup and document workflows.'},
+  {id:3,title:'buildingSMART IFC Documentation',cat:'Open BIM',type:'doc',badge:'doc',url:'https://technical.buildingsmart.org/standards/ifc',desc:'Official IFC schema documentation and Open BIM standards.'},
+  {id:4,title:'Grasshopper Primer',cat:'Computational Design',type:'tutorial',badge:'tutorial',url:'https://grasshopperprimer.com',desc:'Comprehensive introduction to Grasshopper parametric design for Rhino.'},
+  {id:5,title:'Revit API Developer Guide',cat:'Programming',type:'doc',badge:'doc',url:'https://help.autodesk.com/view/RVT/2025/ENU/',desc:'Official Autodesk reference for Revit API and C# add-in development.'}
+];
+
+function loadRes(){ try{const d=localStorage.getItem(RES_KEY);return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_RESOURCES));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_RESOURCES));} }
+function saveResData(d){ localStorage.setItem(RES_KEY,JSON.stringify(d)); }
+
+function renderResTable(){
+  const list = loadRes();
+  document.getElementById('res-tbody').innerHTML = list.map((r,i)=>`
+    <tr>
+      <td style="font-weight:500;max-width:200px;">${r.title}</td>
+      <td><span style="font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.1em;">${r.cat}</span></td>
+      <td><span style="font-family:var(--font-tech);font-size:0.42rem;color:var(--blue);letter-spacing:0.1em;">${r.badge||r.type}</span></td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+        ${r.url?`<a href="${r.url}" target="_blank" style="color:var(--blue);font-size:0.8rem;">${r.url.replace('https://','')}</a>`:'—'}
+      </td>
+      <td>
+        <button class="tb-btn" style="margin-right:0.3rem;" onclick="editRes(${i})">Edit</button>
+        <button class="tb-btn" style="color:#c04040;border-color:#c04040;" onclick="deleteRes(${i})">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+function showAddRes(){
+  clearResForm();
+  document.getElementById('res-form-wrap').style.display='';
+  document.getElementById('res-form-title').textContent='Add Resource';
+}
+
+function editRes(i){
+  const r = loadRes()[i];
+  document.getElementById('res-edit-idx').value = i;
+  document.getElementById('res-f-title').value = r.title;
+  document.getElementById('res-f-cat').value   = r.cat;
+  document.getElementById('res-f-type').value  = r.type;
+  document.getElementById('res-f-badge').value = r.badge||r.type;
+  document.getElementById('res-f-url').value   = r.url||'';
+  document.getElementById('res-f-desc').value  = r.desc||'';
+  document.getElementById('res-form-wrap').style.display='';
+  document.getElementById('res-form-title').textContent='Edit Resource';
+}
+
+function deleteRes(i){
+  if(!confirm('Delete this resource?')) return;
+  const list = loadRes(); list.splice(i,1); saveResData(list); renderResTable();
+}
+
+function saveRes(){
+  const title = document.getElementById('res-f-title').value.trim();
+  if(!title){ alert('Title is required'); return; }
+  const list = loadRes();
+  const idx  = document.getElementById('res-edit-idx').value;
+  const entry = {
+    id: idx!=='' ? list[idx].id : Date.now(),
+    title,
+    cat:   document.getElementById('res-f-cat').value.trim()||'General',
+    type:  document.getElementById('res-f-type').value,
+    badge: document.getElementById('res-f-badge').value,
+    url:   document.getElementById('res-f-url').value.trim(),
+    desc:  document.getElementById('res-f-desc').value.trim()
+  };
+  if(idx!=='') list[idx]=entry; else list.push(entry);
+  saveResData(list); clearResForm();
+  document.getElementById('res-form-wrap').style.display='none';
+  renderResTable();
+}
+
+function cancelRes(){
+  clearResForm();
+  document.getElementById('res-form-wrap').style.display='none';
+}
+
+function clearResForm(){
+  ['res-edit-idx','res-f-title','res-f-cat','res-f-url','res-f-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const t=document.getElementById('res-f-type'); if(t) t.value='link';
+  const b=document.getElementById('res-f-badge'); if(b) b.value='link';
+}
+</script>
+</body>
+</html>
