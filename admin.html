@@ -796,7 +796,10 @@ function showPublishBanner(){
     banner = document.createElement('div');
     banner.id = 'publish-banner';
     banner.style.cssText = 'position:fixed;bottom:3rem;left:50%;transform:translateX(-50%);z-index:999;background:#0d3d8a;color:#fff;font-family:var(--font-tech);font-size:0.46rem;letter-spacing:0.1em;padding:0.7rem 1.4rem;border-radius:4px;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-    banner.innerHTML = '<span>⚠ Changes saved locally — click Publish to make them live on all devices</span><button onclick="publishProjectsJSON()" style="background:#fff;color:#0d3d8a;border:none;padding:0.35rem 0.8rem;font-family:var(--font-tech);font-size:0.42rem;letter-spacing:0.08em;cursor:pointer;border-radius:3px;font-weight:bold;">PUBLISH →</button><button onclick="document.getElementById('publish-banner').remove()" style="background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:0.9rem;">✕</button>';
+    const sp=document.createElement('span');sp.textContent='⚠ Changes saved locally — click Publish to make them live on all devices';
+    const pb1=document.createElement('button');pb1.textContent='PUBLISH →';pb1.style.cssText='background:#fff;color:#0d3d8a;border:none;padding:0.35rem 0.8rem;font-family:var(--font-tech);font-size:0.42rem;cursor:pointer;border-radius:3px;font-weight:bold;';pb1.onclick=publishProjectsJSON;
+    const pb2=document.createElement('button');pb2.textContent='✕';pb2.style.cssText='background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:0.9rem;';pb2.onclick=function(){banner.remove();};
+    banner.appendChild(sp);banner.appendChild(pb1);banner.appendChild(pb2);
     document.body.appendChild(banner);
   }
   clearTimeout(publishBannerTimeout);
@@ -814,7 +817,7 @@ function publishProjectsJSON(){
   a.href = URL.createObjectURL(blob);
   a.download = 'projects.json';
   a.click();
-  document.getElementById('publish-banner')?.remove();
+  const pb=document.getElementById('publish-banner');if(pb)pb.remove();
   showToast('projects.json downloaded! Upload it to your website root folder to go live.','success');
 }
 function loadSettings(){
